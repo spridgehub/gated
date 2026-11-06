@@ -1,0 +1,7 @@
+#!/bin/bash
+# Apply crew requests from GitHub issues, rebuild data.json and publish the site.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+git pull -q --rebase origin main 2>/dev/null || true
+.venv/bin/python -m gated.ingest
+~/bin/ship . -m "${1:-Update tracker $(date '+%Y-%m-%d %H:%M')}"

@@ -1,0 +1,5 @@
+.venv/
+data/*.db*
+data/config.json
+logs/
+__pycache__/

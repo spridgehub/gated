@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gated · UK analogue supercar tracker</title>
+<meta name="theme-color" content="#0c0b0a">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/gated-icon.svg" type="image/svg+xml">
+<script>try{const t=localStorage.getItem("gated-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+/* Gated: same family as Pond Cottage, Posh on Paper and Netwatch. Carbon surfaces, borders only, one signal
+   colour (rosso, for the brand and actions), DIN Condensed figures. Price colours are DATA: a diverging scale,
+   blue for a cut, amber for a rise, grey for no change. View momentum is a separate teal ramp. */
+:root{
+  --font-ui:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;
+  --font-head:"DIN Condensed","Barlow Condensed","Oswald","Arial Narrow",sans-serif;
+  --font-serif:Georgia,"Times New Roman",serif;
+  --carbon:#0c0b0a; --panel:#141210; --panel-up:#1b1916; --inset:#090807;
+  --line:rgb(255 255 255 / .08); --line-strong:rgb(255 255 255 / .15);
+  --ink-1:#f3f0ec; --ink-2:#c9c3bb; --ink-3:#958d84; --ink-4:#857d75;
+  --signal:#ff4a3d; --signal-hover:#ff6a5f; --on-signal:#1f0503; --signal-ink:#ff6a5f;
+  --st-ok:#2fd67b; --st-warn:#f5c518; --st-bad:#ff5a4f; --st-none:#7b838d;
+  --p-down:#3d7fe0; --p-flat:#5a5650; --p-up:#f2a03a;
+  --v-lo:#1a2524; --v-hi:#2fd1c0;
+  --r-control:6px; --r-panel:12px; --r-pill:999px;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --carbon:#f4f2ef; --panel:#ffffff; --panel-up:#faf8f6; --inset:#f6f4f1;
+  --line:rgb(30 20 10 / .10); --line-strong:rgb(30 20 10 / .18);
+  --ink-1:#17130f; --ink-2:#3b342d; --ink-3:#5f574f; --ink-4:#6b635b;
+  --signal:#c21f14; --signal-hover:#a3180f; --on-signal:#fff; --signal-ink:#b01c12;
+  --st-ok:#13824a; --st-warn:#946c00; --st-bad:#c8261c; --st-none:#6b7480;
+  --p-down:#2a6fd6; --p-flat:#d9d4cd; --p-up:#e08a17; --v-lo:#e3efed; --v-hi:#0f9488; color-scheme:light}}
+:root[data-theme="light"]{
+  --carbon:#f4f2ef; --panel:#ffffff; --panel-up:#faf8f6; --inset:#f6f4f1;
+  --line:rgb(30 20 10 / .10); --line-strong:rgb(30 20 10 / .18);
+  --ink-1:#17130f; --ink-2:#3b342d; --ink-3:#5f574f; --ink-4:#6b635b;
+  --signal:#c21f14; --signal-hover:#a3180f; --on-signal:#fff; --signal-ink:#b01c12;
+  --st-ok:#13824a; --st-warn:#946c00; --st-bad:#c8261c; --st-none:#6b7480;
+  --p-down:#2a6fd6; --p-flat:#d9d4cd; --p-up:#e08a17; --v-lo:#e3efed; --v-hi:#0f9488; color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--carbon);color:var(--ink-1);font:400 15px/1.5 var(--font-ui);-webkit-font-smoothing:antialiased;overflow-x:clip}
+h1,h2,h3{margin:0;text-wrap:balance}
+a{color:inherit}
+.num{font-family:var(--font-head);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.muted{color:var(--ink-3)} .dim{color:var(--ink-4)}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:4px}
+
+header.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--carbon) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{max-width:1320px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.mark{width:22px;height:22px;flex:none}
+.brand{font:700 22px/1 var(--font-head);letter-spacing:.08em;text-transform:uppercase}
+.brand small{display:block;font:italic 400 12.5px/1.3 var(--font-serif);letter-spacing:0;text-transform:none;color:var(--ink-3);margin-top:2px}
+.bar .sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--line-strong);border-radius:var(--r-pill);font-size:12.5px;color:var(--ink-2);white-space:nowrap;background:none;font-family:inherit}
+button.chip{cursor:pointer}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--st-none)}
+.dot.ok{background:var(--st-ok)}.dot.warn{background:var(--st-warn)}.dot.bad{background:var(--st-bad)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r-control);border:1px solid var(--line-strong);background:var(--panel-up);color:var(--ink-1);font:600 13px/1 var(--font-ui);cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--ink-4)}
+.btn.primary{background:var(--signal);border-color:var(--signal);color:var(--on-signal)}
+.btn.primary:hover{background:var(--signal-hover)}
+.btn.small{padding:4px 9px;font-size:12px;font-weight:550}
+.btn.ghost{background:none}
+main{max-width:1320px;margin:0 auto;padding:16px 16px 56px;display:grid;gap:14px}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel);padding:16px;min-width:0}
+.panel h2{font-size:10.5px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.panel h2 .sp{flex:1}
+.headline{font:600 26px/1.15 var(--font-head);letter-spacing:.01em;margin:-4px 0 12px;text-transform:none}
+.headline .em{color:var(--signal-ink)}
+.grid{display:grid;gap:14px}
+@media (min-width:980px){.g-2{grid-template-columns:1fr 1fr}}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.tile{background:var(--panel-up);border:1px solid var(--line);border-radius:10px;padding:12px}
+.k{font-size:10.5px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.tile .v{font:600 30px/1.1 var(--font-head);margin-top:4px;font-variant-numeric:tabular-nums}
+.tile .d{font-size:12.5px;color:var(--ink-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile a{text-decoration:none}
+
+/* heatmap */
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:var(--r-pill);overflow:hidden}
+.seg button{background:none;border:0;color:var(--ink-3);font:600 11.5px/1 var(--font-ui);padding:6px 11px;cursor:pointer;letter-spacing:.03em}
+.seg button.on{background:var(--panel-up);color:var(--ink-1)}
+.heat{display:grid;grid-template-columns:minmax(150px,230px) 1fr 70px;gap:3px 10px;align-items:center}
+.heat .lab{font-size:13px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;display:flex;align-items:center;gap:6px}
+.heat .lab .tw{color:var(--ink-4);font-size:10px;width:10px;flex:none}
+.heat .lab.car{padding-left:16px;font-size:12.5px;color:var(--ink-3);cursor:default}
+.heat .lab.grp{font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.12em;margin-top:8px;cursor:default;font-weight:650}
+.heat .now{font-size:15px;text-align:right}
+.cells{display:grid;gap:2px;height:20px}
+.heat .car + .cells{height:13px}
+.cells i{display:block;border-radius:2px;min-width:0;background:var(--inset);outline:1px solid var(--line);outline-offset:-1px}
+.cells i.v{outline:0}
+.axis{display:grid;font-size:11px;color:var(--ink-4);margin-top:4px}
+.axis span{border-left:1px solid var(--line-strong);padding-left:3px;white-space:nowrap}
+.legend{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:var(--ink-3);flex-wrap:wrap}
+.ramp{width:160px;height:8px;border-radius:4px}
+.ramp.p{background:linear-gradient(90deg,var(--p-down),var(--p-flat),var(--p-up))}
+.ramp.v{background:linear-gradient(90deg,var(--v-lo),var(--v-hi))}
+.spike{display:inline-block;width:8px;height:8px;border-radius:2px;outline:2px solid var(--ink-1);outline-offset:-2px;vertical-align:middle}
+.cells i.sp{outline:2px solid var(--ink-1);outline-offset:-2px}
+#tip{position:fixed;pointer-events:none;z-index:30;background:var(--panel-up);border:1px solid var(--line-strong);border-radius:8px;padding:6px 10px;font-size:12.5px;box-shadow:0 6px 24px rgb(0 0 0 / .35);max-width:300px}
+.baseline{border:1px dashed var(--line-strong);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink-3);margin-bottom:12px}
+
+/* tables */
+.tw-wrap{overflow-x:auto;margin:0 -4px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:10.5px;font-weight:650;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line-strong);white-space:nowrap}
+th.sortable{cursor:pointer}
+th.sorted::after{content:" ↓";color:var(--ink-2)}
+th.sorted.asc::after{content:" ↑"}
+td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+td.r,th.r{text-align:right}
+td .sub{display:block;font-size:12px;color:var(--ink-4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:320px}
+td.carname{min-width:220px}
+td.carname a{text-decoration:none;font-weight:550}
+td.carname a:hover{color:var(--signal-ink)}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:color-mix(in srgb,var(--ink-1) 3%,transparent)}
+.up{color:var(--p-up)} .down{color:var(--p-down)}
+.pill{display:inline-block;padding:1px 8px;border-radius:var(--r-pill);font-size:11.5px;border:1px solid var(--line-strong);color:var(--ink-2);white-space:nowrap}
+.pill.reserved{border-color:var(--st-warn);color:var(--st-warn)}
+.pill.sold{border-color:var(--st-ok);color:var(--st-ok)}
+.pill.gone{color:var(--ink-4)}
+.pill.alert{border-color:var(--signal);color:var(--signal-ink)}
+.wld{font-family:var(--font-head);font-size:15px;letter-spacing:.04em}
+.wld b{color:var(--st-ok);font-weight:600}.wld s{color:var(--st-bad);text-decoration:none}.wld em{color:var(--ink-3);font-style:normal}
+
+/* filters */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.filters .chip.on{border-color:var(--signal);color:var(--ink-1)}
+input,select,textarea{font:inherit;font-size:14px;color:var(--ink-1);background:var(--inset);border:1px solid var(--line-strong);border-radius:var(--r-control);padding:8px 10px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--signal);outline-offset:-1px;border-color:transparent}
+.filters input{width:220px;padding:5px 10px;border-radius:var(--r-pill);font-size:13px}
+
+/* group cards */
+.gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.gcard{background:var(--panel-up);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:8px;cursor:pointer}
+.gcard:hover{border-color:var(--line-strong)}
+.gcard.on{border-color:var(--signal)}
+.gcard h3{font:600 19px/1.1 var(--font-head);letter-spacing:.02em}
+.gcard .desc{font-size:12.5px;color:var(--ink-3);min-height:18px}
+.gcard .row{display:flex;gap:14px;align-items:flex-end}
+.gcard .row div{min-width:0}
+.gcard .row .v{font:600 18px/1.1 var(--font-head);font-variant-numeric:tabular-nums}
+.gcard svg{width:100%;height:34px;display:block}
+.gcard .foot{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-4)}
+
+/* dialogs */
+dialog{border:1px solid var(--line-strong);border-radius:var(--r-panel);background:var(--panel);color:var(--ink-1);padding:0;width:min(560px,94vw);max-height:90vh}
+dialog::backdrop{background:rgb(0 0 0 / .55);backdrop-filter:blur(2px)}
+dialog form{padding:18px;display:grid;gap:12px}
+dialog h3{font:600 24px/1.1 var(--font-head);letter-spacing:.02em}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+label{display:grid;gap:4px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:650}
+label .hint{text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink-4);font-size:12px}
+.checks{display:flex;flex-wrap:wrap;gap:6px}
+.checks label{display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink-2);border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:4px 10px;cursor:pointer;font-weight:450}
+.checks input{width:auto;margin:0;accent-color:var(--signal)}
+.checks label:has(input:checked){border-color:var(--signal);color:var(--ink-1)}
+.carpick{max-height:300px;overflow:auto;display:grid;gap:2px;border:1px solid var(--line);border-radius:8px;padding:6px}
+.carpick label{display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink-2);padding:4px 6px;border-radius:6px;font-weight:450;cursor:pointer}
+.carpick label:hover{background:var(--panel-up)}
+.carpick input{width:auto;margin:0;accent-color:var(--signal)}
+.carpick .sec{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4);padding:6px 6px 2px;font-weight:650}
+.actions{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.actions .sp{flex:1}
+.err{color:var(--st-bad);font-size:13px;min-height:1em}
+.hist{font-size:12.5px}
+.hist td{padding:4px 6px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--panel-up);border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:8px 16px;font-size:13px;z-index:40;box-shadow:0 6px 24px rgb(0 0 0 / .35)}
+footer{max-width:1320px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:var(--ink-4)}
+@media (max-width:700px){.heat{grid-template-columns:110px 1fr 52px}.brand small{display:none}.f3{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header class="top"><div class="bar">
+  <svg class="mark" viewBox="0 0 22 22" aria-hidden="true"><g fill="none" stroke="var(--signal)" stroke-width="2.4" stroke-linecap="round"><path d="M5 3v16M11 3v16M17 3v16M5 11h12" opacity=".9"/></g><circle cx="17" cy="19" r="2.6" fill="var(--signal)"/></svg>
+  <div class="brand">Gated<small>UK analogue supercar tracker</small></div>
+  <div class="sp"></div>
+  <span class="chip" id="asof"><span class="dot"></span>Loading</span>
+  <button class="chip" id="who" type="button">View only</button>
+  <button class="chip" id="theme" type="button" aria-label="Switch theme">◐</button>
+  <button class="btn primary" id="addBtn" type="button">+ Add a car</button>
+</div></header>
+
+<main>
+  <section class="panel">
+    <h2>Market overview<span class="sp"></span><span class="dim" id="ovNote"></span></h2>
+    <div class="headline" id="headline"></div>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Market heat · last 30 days<span class="sp"></span>
+      <span class="seg" id="heatMode"><button class="on" data-m="price">Price moves</button><button data-m="views">View momentum</button></span>
+      <span class="seg" id="heatRows"><button class="on" data-r="sector">By model</button><button data-r="group">By group</button></span>
+    </h2>
+    <div class="headline" id="heatHead"></div>
+    <div class="baseline" id="baseline" hidden></div>
+    <div class="heat" id="heat"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Groups<span class="sp"></span><button class="btn small" id="newGroup" type="button">+ New group</button></h2>
+    <div class="gcards" id="gcards"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Model matrix<span class="sp"></span><span class="dim">W/L/D over 30 days · supply alert at 3 or fewer live cars</span></h2>
+    <div class="tw-wrap"><table id="matrix"></table></div>
+  </section>
+
+  <section class="panel">
+    <h2>Every car<span class="sp"></span><span class="dim" id="carCount"></span></h2>
+    <div class="filters" id="filters"></div>
+    <div class="tw-wrap"><table id="cars"></table></div>
+  </section>
+</main>
+<footer id="foot"></footer>
+<div id="tip" hidden></div>
+
+<dialog id="dlgCar"><form method="dialog" id="fCar">
+  <h3 id="carTitle">Add a car</h3>
+  <label>Listing link<input name="url" type="url" placeholder="https://www.pistonheads.com/buy/listing/..." required></label>
+  <label>Your name for it <span class="hint">e.g. "Napier Green 675LT, Club Sport"</span><input name="name" maxlength="120" required></label>
+  <div class="f2">
+    <label>Model<select name="sector"></select></label>
+    <label>Seller<input name="seller" maxlength="80"></label>
+  </div>
+  <div class="f3">
+    <label>Year<input name="year" inputmode="numeric"></label>
+    <label>Mileage<input name="mileage" inputmode="numeric"></label>
+    <label>Location<input name="location" maxlength="80"></label>
+  </div>
+  <div class="f2" id="carToday">
+    <label>Asking price today (£)<input name="price" inputmode="numeric" placeholder="249950"></label>
+    <label>Views today <span class="hint">PistonHeads shows these</span><input name="views" inputmode="numeric"></label>
+  </div>
+  <label>Groups<div class="checks" id="carGroups"></div></label>
+  <label>Notes<textarea name="notes" rows="2" maxlength="600" placeholder="Spec, history, anything to check"></textarea></label>
+  <div class="err" id="carErr"></div>
+  <div class="actions"><button class="btn ghost" type="button" id="carArchive" hidden>Remove from tracker</button><span class="sp"></span><button class="btn ghost" value="cancel" formnovalidate>Cancel</button><button class="btn primary" id="carSave" value="ok">Add car</button></div>
+</form></dialog>
+
+<dialog id="dlgLog"><form method="dialog" id="fLog">
+  <h3 id="logTitle">Log today</h3>
+  <div class="muted" id="logSub" style="font-size:13px"></div>
+  <div class="f3">
+    <label>Asking price (£)<input name="price" inputmode="numeric"></label>
+    <label>Views<input name="views" inputmode="numeric"></label>
+    <label>Status<select name="status"><option value="">No change</option><option value="live">Live</option><option value="reserved">Reserved</option><option value="sold">Sold</option><option value="gone">Gone</option></select></label>
+  </div>
+  <div class="hist" id="logHist"></div>
+  <div class="err" id="logErr"></div>
+  <div class="actions"><button class="btn ghost" type="button" id="logEdit">Edit details</button><span class="sp"></span><button class="btn ghost" value="cancel" formnovalidate>Close</button><button class="btn primary" value="ok">Save</button></div>
+</form></dialog>
+
+<dialog id="dlgGroup"><form method="dialog" id="fGroup">
+  <h3 id="grpTitle">New group</h3>
+  <label>Name<input name="name" maxlength="60" required placeholder="e.g. Cars Tom would actually buy"></label>
+  <label>What links them<input name="description" maxlength="300"></label>
+  <label>Cars in this group<div class="carpick" id="grpCars"></div></label>
+  <div class="err" id="grpErr"></div>
+  <div class="actions"><button class="btn ghost" type="button" id="grpDelete" hidden>Delete group</button><span class="sp"></span><button class="btn ghost" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="ok">Save group</button></div>
+</form></dialog>
+
+<dialog id="dlgWho"><form method="dialog" id="fWho">
+  <h3>Join the crew</h3>
+  <p class="muted" style="margin:0;font-size:13.5px">Anyone can look. To add cars, log prices or build groups, enter your name and the crew code from the share link.</p>
+  <div class="f2">
+    <label>Your name<input name="by" maxlength="40" required></label>
+    <label>Crew code<input name="code" required autocomplete="off"></label>
+  </div>
+  <div class="err" id="whoErr"></div>
+  <div class="actions"><span class="sp"></span><button class="btn ghost" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="ok">Join</button></div>
+</form></dialog>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const h=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const gbp=n=>n==null?"–":"£"+Math.round(n).toLocaleString("en-GB");
+const gbpk=n=>n==null?"–":n>=1e6?"£"+(n/1e6).toFixed(2)+"m":"£"+Math.round(n/1000)+"k";
+const pct=(n,d=1)=>n==null||!isFinite(n)?"–":(n>0?"+":n<0?"−":"")+Math.abs(n*100).toFixed(d)+"%";
+const DAY=864e5, NDAYS=30;
+let S=null, mode="price", rowsBy="sector", open=new Set(), fGroup=null, fSector=null, q="", sortKey="added", sortAsc=false;
+const LS={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+
+// crew code arrives in the share link once, then lives in the browser
+(()=>{const u=new URL(location.href),k=u.searchParams.get("k");if(k){LS.set("gated-code",k);u.searchParams.delete("k");history.replaceState(null,"",u.pathname+u.search+u.hash)}})();
+const crew=()=>({code:LS.get("gated-code"),by:LS.get("gated-name")});
+
+async function api(path,body){
+  const r=await fetch(path,body?{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...body,...crew()})}:{});
+  const j=await r.json().catch(()=>({error:"Server error"}));
+  if(!r.ok)throw new Error(j.error||"Something went wrong");
+  return j;
+}
+function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.append(t);setTimeout(()=>t.remove(),2600)}
+
+/* ---------- maths ---------- */
+const dayStr=d=>d.toISOString().slice(0,10);
+function days(){const end=new Date(S.today+"T12:00:00Z");return Array.from({length:NDAYS},(_,i)=>dayStr(new Date(end-(NDAYS-1-i)*DAY)))}
+function diffDays(a,b){return Math.round((new Date(b+"T12:00:00Z")-new Date(a+"T12:00:00Z"))/DAY)}
+
+function enrich(c){
+  const sn=c.snaps.slice().sort((a,b)=>a.day<b.day?-1:1);
+  const prices=sn.filter(s=>s.price!=null), views=sn.filter(s=>s.views!=null);
+  c.price=prices.length?prices.at(-1).price:null;
+  c.firstPrice=prices.length?prices[0].price:null;
+  c.chg=c.price&&c.firstPrice?c.price/c.firstPrice-1:null;
+  c.views=views.length?views.at(-1).views:null;
+  // daily series: price % change on the day it moved, views gained per day (spread across gaps)
+  c.pDay={};c.vDay={};c.spike={};
+  for(let i=1;i<prices.length;i++){const a=prices[i-1],b=prices[i];if(b.price!==a.price)c.pDay[b.day]=(c.pDay[b.day]||0)+(b.price/a.price-1)}
+  for(let i=1;i<views.length;i++){const a=views[i-1],b=views[i],g=Math.max(0,b.views-a.views),n=Math.max(1,diffDays(a.day,b.day));
+    const per=g/n;for(let k=0;k<n;k++){const d=dayStr(new Date(new Date(b.day+"T12:00:00Z")-k*DAY));c.vDay[d]=per}
+    if(n===1&&(g>=25||(a.views>0&&g/a.views>=.15)))c.spike[b.day]=true}
+  const vd=Object.entries(c.vDay).sort().slice(-7).map(e=>e[1]);
+  c.vpd=vd.length?vd.reduce((x,y)=>x+y,0)/vd.length:null;
+  c.vToday=c.vDay[S.today]??null;
+  const first=c.listed_at?c.listed_at.slice(0,10):(sn[0]?.day||c.added_at.slice(0,10));
+  c.age=diffDays(first,S.today);
+  c.firstSeen=sn[0]?.day;
+  // 30-day verdict
+  const since=dayStr(new Date(new Date(S.today+"T12:00:00Z")-NDAYS*DAY));
+  const recent=prices.filter(s=>s.day>=since), base=prices.filter(s=>s.day<since).at(-1)||recent[0];
+  const move=base&&c.price?c.price/base.price-1:0;
+  const rose=Object.entries(c.pDay).some(([d,v])=>d>=since&&v>0);
+  const recentStatus=sn.some(s=>s.day>=since&&(s.status==="reserved"||s.status==="sold"));
+  c.verdict=(recentStatus||c.status==="reserved"||c.status==="sold"||rose)?"W":(move<-.03||(c.age>60&&Math.abs(move)<.001))?"L":"D";
+  return c;
+}
+const median=a=>{const s=a.filter(x=>x!=null).sort((x,y)=>x-y);if(!s.length)return null;const m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2};
+const live=c=>c.status==="live"||c.status==="reserved";
+
+function rowsFor(by){
+  if(by==="group")return S.groups.map(g=>({key:"g"+g.id,label:g.name,cars:S.cars.filter(c=>c.groups.includes(g.id))}));
+  return S.sectors.map(s=>({key:"s"+s,label:s,cars:S.cars.filter(c=>c.sector===s)})).filter(r=>r.cars.length);
+}
+function aggDay(cars,d){
+  if(mode==="price"){const has=cars.filter(c=>c.price!=null&&c.firstSeen&&c.firstSeen<d);if(!has.length)return null;
+    return has.reduce((x,c)=>x+(c.pDay[d]||0),0)/has.length}
+  const v=cars.map(c=>c.vDay[d]).filter(x=>x!=null);return v.length?v.reduce((x,y)=>x+y,0):null;
+}
+
+/* ---------- colour ---------- */
+function mix(a,b,t){return `color-mix(in oklab, var(${b}) ${Math.round(t*100)}%, var(${a}))`}
+function pColor(v){if(v==null)return null;if(Math.abs(v)<.0005)return "var(--p-flat)";const t=Math.min(1,.25+Math.abs(v)/.05*.75);return mix("--p-flat",v<0?"--p-down":"--p-up",t)}
+let vMax=1;function vColor(v){if(v==null)return null;return mix("--v-lo","--v-hi",Math.min(1,Math.sqrt(v/vMax)))}
+
+/* ---------- render ---------- */
+function render(){
+  S.cars.forEach(enrich);
+  renderHead();renderTiles();renderHeat();renderGroups();renderMatrix();renderFilters();renderCars();renderWho();
+  $("#foot").innerHTML=`Prices and views come from the listing pages, logged by the crew${S.auto_check?" and checked automatically each morning":""}. Nothing is estimated: a blank means nobody has recorded it yet. Each car links to its live advert.`;
+}
+function renderHead(){
+  const last=S.cars.flatMap(c=>c.snaps.map(s=>s.day)).sort().at(-1);
+  $("#asof").innerHTML=`<span class="dot ${last===S.today?"ok":"warn"}"></span>${last===S.today?"Updated today":"Last update "+h(last||"never")}`;
+}
+function renderTiles(){
+  const L=S.cars.filter(live), wk=dayStr(new Date(new Date(S.today+"T12:00:00Z")-7*DAY));
+  const cuts=S.cars.filter(c=>Object.entries(c.pDay).some(([d,v])=>d>wk&&v<0)), rises=S.cars.filter(c=>Object.entries(c.pDay).some(([d,v])=>d>wk&&v>0));
+  const hot=S.cars.filter(c=>c.vpd!=null).sort((a,b)=>b.vpd-a.vpd)[0];
+  const sold=S.cars.filter(c=>c.status==="sold"||c.status==="reserved");
+  const w=S.cars.filter(c=>c.verdict==="W").length, n=S.cars.length;
+  const sectors=rowsFor("sector"), tight=sectors.filter(r=>r.cars.filter(live).length<=3);
+  const total=L.reduce((x,c)=>x+(c.price||0),0);
+  $("#tiles").innerHTML=[
+    ["Live cars",L.length,`${S.cars.length} tracked, ${S.groups.length} groups`],
+    ["Total asking",gbpk(total),`across ${L.filter(c=>c.price).length} priced cars`],
+    ["Moves this week",`<span class="down">${cuts.length}</span> / <span class="up">${rises.length}</span>`,"cuts / rises"],
+    ["Hottest listing",hot?Math.round(hot.vpd)+"<small class='muted' style='font-size:14px'>/day</small>":"–",hot?`<a href="${h(hot.url)}" target="_blank" rel="noopener">${h(hot.name)}</a>`:"needs two days of view counts"],
+    ["Reserved / sold",sold.length,sold[0]?h(sold[0].name):"none yet"],
+    ["Win rate (30d)",n?Math.round(w/n*100)+"%":"–",`${w}W ${S.cars.filter(c=>c.verdict==="L").length}L ${S.cars.filter(c=>c.verdict==="D").length}D`],
+    ["Supply alerts",tight.length,tight.length?h(tight.map(r=>r.label).join(", ")):"no model at 3 or fewer"],
+  ].map(([k,v,d])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join("");
+  // headline states the finding
+  const movers=S.cars.filter(c=>c.chg!=null&&c.chg!==0).sort((a,b)=>a.chg-b.chg);
+  let line;
+  if(movers.length){const m=movers[0].chg<0?movers[0]:movers.at(-1);line=`Biggest move: <span class="em">${h(m.name)}</span> ${pct(m.chg)} since first seen`}
+  else line=`Baseline set: <span class="em">${L.length} live cars</span> across ${sectors.length} models, worth ${gbpk(total)}`;
+  $("#headline").innerHTML=line;
+  $("#ovNote").textContent=`Since ${S.cars.map(c=>c.firstSeen).filter(Boolean).sort()[0]||S.today}`;
+}
+function renderHeat(){
+  const D=days(), rows=rowsFor(rowsBy);
+  vMax=Math.max(5,...S.cars.flatMap(c=>D.map(d=>c.vDay[d]||0)));
+  const span=diffDays(S.cars.map(c=>c.firstSeen).filter(Boolean).sort()[0]||S.today,S.today);
+  const bl=$("#baseline");
+  bl.hidden=span>=3;
+  bl.innerHTML=`Day ${span+1} of tracking. Each column is a day: the map fills in as prices and view counts are logged, and colours appear the first time a car's asking price moves or its views tick up.`;
+  const cols=`grid-template-columns:repeat(${NDAYS},1fr)`;
+  let html="";
+  const cell=(v,d,extra,sp)=>{const col=mode==="price"?pColor(v):vColor(v);
+    return `<i class="${col?"v":""}${sp?" sp":""}" style="${col?"background:"+col:""}" data-d="${d}" data-t="${h(extra)}"></i>`};
+  for(const r of rows){
+    const isOpen=open.has(r.key);
+    const lastVal=mode==="price"?(()=>{const ch=r.cars.map(c=>c.chg).filter(x=>x!=null);return ch.length?ch.reduce((a,b)=>a+b,0)/ch.length:null})():r.cars.reduce((x,c)=>x+(c.vpd||0),0);
+    html+=`<div class="lab" data-k="${h(r.key)}"><span class="tw">${isOpen?"▾":"▸"}</span>${h(r.label)} <span class="dim">${r.cars.length}</span></div>`;
+    html+=`<div class="cells" style="${cols}">${D.map(d=>{const v=aggDay(r.cars,d);
+      return cell(v,d,`${r.label} · ${d}: ${v==null?"no data":mode==="price"?"avg move "+pct(v,2):Math.round(v)+" views"}`,mode==="views"&&r.cars.some(c=>c.spike[d]))}).join("")}</div>`;
+    html+=`<div class="now num ${mode==="price"&&lastVal?lastVal<0?"down":"up":""}">${mode==="price"?pct(lastVal):lastVal?Math.round(lastVal)+"/d":"–"}</div>`;
+    if(isOpen)for(const c of r.cars){
+      html+=`<div class="lab car" title="${h(c.name)}">${h(c.name)}</div><div class="cells" style="${cols}">${D.map(d=>{
+        const v=mode==="price"?(c.firstSeen&&d>c.firstSeen&&c.price!=null?(c.pDay[d]||0):null):(c.vDay[d]??null);
+        return cell(v,d,`${c.name} · ${d}: ${v==null?"no data":mode==="price"?(v?pct(v,2):"no change"):Math.round(v)+" views"+(c.spike[d]?" (spike)":"")}`,mode==="views"&&c.spike[d])}).join("")}</div>`;
+      html+=`<div class="now num ${mode==="price"&&c.chg?c.chg<0?"down":"up":""}">${mode==="price"?gbpk(c.price):c.vpd!=null?Math.round(c.vpd)+"/d":"–"}</div>`;
+    }
+  }
+  if(!rows.length)html=`<div class="muted" style="grid-column:1/-1">No ${rowsBy==="group"?"groups":"cars"} yet.</div>`;
+  const ax=D.map((d,i)=>i%7===0?`<span style="grid-column:${i+1}/span 7">${new Date(d+"T12:00:00Z").toLocaleDateString("en-GB",{day:"numeric",month:"short"})}</span>`:"").join("");
+  html+=`<div></div><div class="axis" style="${cols}">${ax}</div><div class="axis" style="display:block;text-align:right">${mode==="price"?"since first":"views/day"}</div>`;
+  $("#heat").innerHTML=html;
+  $("#legend").innerHTML=mode==="price"
+    ?`<span>Daily asking-price move (group rows average their cars)</span><span class="down">cut</span><span class="ramp p"></span><span class="up">rise</span><span class="dim">full colour at 5%</span>`
+    :`<span>Views gained per day</span><span>0</span><span class="ramp v"></span><span>${Math.round(vMax)}</span><span><span class="spike"></span> spike: +25 views or +15% in a day</span>`;
+  // finding
+  let head;
+  if(mode==="price"){const r=rows.map(r=>({r,v:r.cars.map(c=>c.chg).filter(x=>x!=null)})).filter(x=>x.v.length).map(x=>({...x,m:x.v.reduce((a,b)=>a+b,0)/x.v.length}));
+    const s=r.filter(x=>x.m!==0).sort((a,b)=>a.m-b.m);
+    head=s.length?`<span class="em">${h(s[0].r.label)}</span> is ${s[0].m<0?"softening most":"firming most"} at ${pct(s[0].m)}`:"No asking prices have moved yet";}
+  else{const s=S.cars.filter(c=>c.vpd).sort((a,b)=>b.vpd-a.vpd);head=s.length?`<span class="em">${h(s[0].name)}</span> is pulling the most traffic at ${Math.round(s[0].vpd)} views a day`:"View momentum starts once a car has view counts on two days"}
+  $("#heatHead").innerHTML=head;
+}
+function spark(cars){
+  const D=days(), pts=D.map(d=>median(cars.map(c=>{const p=c.snaps.filter(s=>s.price!=null&&s.day<=d).at(-1);return p?p.price:null})));
+  const v=pts.filter(x=>x!=null);if(v.length<2)return `<svg viewBox="0 0 100 34"><line x1="0" y1="17" x2="100" y2="17" stroke="var(--line-strong)" stroke-dasharray="2 3"/></svg>`;
+  const lo=Math.min(...v),hi=Math.max(...v),rg=hi-lo||1;
+  const p=pts.map((x,i)=>x==null?null:`${(i/(NDAYS-1)*100).toFixed(1)},${(30-((x-lo)/rg)*26).toFixed(1)}`).filter(Boolean);
+  const col=v.at(-1)<v[0]?"var(--p-down)":v.at(-1)>v[0]?"var(--p-up)":"var(--ink-3)";
+  return `<svg viewBox="0 0 100 34" preserveAspectRatio="none"><polyline points="${p.join(" ")}" fill="none" stroke="${col}" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>`;
+}
+function renderGroups(){
+  $("#gcards").innerHTML=S.groups.map(g=>{
+    const cars=S.cars.filter(c=>c.groups.includes(g.id)), L=cars.filter(live), pr=L.map(c=>c.price).filter(x=>x!=null);
+    const ch=cars.map(c=>c.chg).filter(x=>x!=null), m=ch.length?ch.reduce((a,b)=>a+b,0)/ch.length:null;
+    const vpd=cars.reduce((x,c)=>x+(c.vpd||0),0);
+    return `<div class="gcard ${fGroup===g.id?"on":""}" data-g="${g.id}">
+      <div><h3>${h(g.name)}</h3><div class="desc">${h(g.description||"")}</div></div>
+      <div class="row"><div><div class="k">Live</div><div class="v">${L.length}</div></div><div><div class="k">Floor</div><div class="v">${gbpk(pr.length?Math.min(...pr):null)}</div></div><div><div class="k">Ceiling</div><div class="v">${gbpk(pr.length?Math.max(...pr):null)}</div></div><div><div class="k">Move</div><div class="v ${m?m<0?"down":"up":""}">${pct(m)}</div></div><div><div class="k">Views</div><div class="v">${vpd?Math.round(vpd)+"/d":"–"}</div></div></div>
+      ${spark(cars)}
+      <div class="foot"><span>by ${h(g.created_by||"?")}</span><button class="btn small ghost" data-edit-g="${g.id}" type="button">Edit</button></div></div>`}).join("")||`<div class="muted">No groups yet. Make one to link cars you want to compare.</div>`;
+}
+function renderMatrix(){
+  const rows=rowsFor("sector");
+  const all=S.cars.filter(c=>c.sector.startsWith("Porsche"));
+  const med=s=>median(S.cars.filter(c=>c.sector===s&&live(c)).map(c=>c.price));
+  $("#matrix").innerHTML=`<thead><tr><th>Model</th><th class="r">Live</th><th class="r">Floor</th><th class="r">Median</th><th class="r">Ceiling</th><th class="r">Move</th><th class="r">Views/day</th><th>W / L / D</th><th class="r">Win rate</th><th>Signal</th></tr></thead><tbody>${rows.map(r=>{
+    const L=r.cars.filter(live), pr=L.map(c=>c.price).filter(x=>x!=null);
+    const w=r.cars.filter(c=>c.verdict==="W").length,l=r.cars.filter(c=>c.verdict==="L").length,d=r.cars.filter(c=>c.verdict==="D").length;
+    const ch=r.cars.map(c=>c.chg).filter(x=>x!=null), m=ch.length?ch.reduce((a,b)=>a+b,0)/ch.length:null;
+    const vpd=r.cars.reduce((x,c)=>x+(c.vpd||0),0);
+    const sig=[];if(L.length<=3)sig.push(`<span class="pill alert">Supply ≤3</span>`);
+    if(r.cars.some(c=>Object.values(c.spike).length))sig.push(`<span class="pill">View spike</span>`);
+    return `<tr><td>${h(r.label)}</td><td class="r num">${L.length}</td><td class="r num">${gbpk(pr.length?Math.min(...pr):null)}</td><td class="r num">${gbpk(median(pr))}</td><td class="r num">${gbpk(pr.length?Math.max(...pr):null)}</td><td class="r num ${m?m<0?"down":"up":""}">${pct(m)}</td><td class="r num">${vpd?Math.round(vpd):"–"}</td><td class="wld"><b>${w}</b> / <s>${l}</s> / <em>${d}</em></td><td class="r num">${r.cars.length?Math.round(w/r.cars.length*100)+"%":"–"}</td><td>${sig.join(" ")}</td></tr>`}).join("")}</tbody>`;
+  // halo drag ratios where both sides exist
+  const pairs=[["Porsche 997.2 GT3 / RS","Porsche 991.1 GT3"],["Porsche 997.1 GT3 / RS","Porsche 991.1 GT3"],["Ferrari 430 Scuderia / 16M","Ferrari F430 manual"]];
+  const hd=pairs.map(([a,b])=>{const x=med(a),y=med(b);return x&&y?`${h(a.replace("Porsche ","").replace("Ferrari ",""))} vs ${h(b.replace("Porsche ","").replace("Ferrari ",""))}: <b class="num">${(x/y).toFixed(2)}×</b>`:null}).filter(Boolean);
+  if(hd.length)$("#matrix").insertAdjacentHTML("beforeend",`<caption style="caption-side:bottom;text-align:left;padding-top:10px;font-size:12.5px;color:var(--ink-3)">Halo drag (median ask): ${hd.join(" · ")}</caption>`);
+}
+function renderFilters(){
+  const secs=[...new Set(S.cars.map(c=>c.sector))];
+  $("#filters").innerHTML=`<input id="q" placeholder="Search cars, sellers, notes" value="${h(q)}"><button class="chip ${!fSector&&!fGroup?"on":""}" data-f="" type="button">All</button>`+
+    secs.map(s=>`<button class="chip ${fSector===s?"on":""}" data-f="${h(s)}" type="button">${h(s)}</button>`).join("")+
+    (fGroup?`<button class="chip on" data-clear-g type="button">Group: ${h(S.groups.find(g=>g.id===fGroup)?.name)} ✕</button>`:"");
+  $("#q").oninput=e=>{q=e.target.value;renderCars()};
+}
+const COLS=[["name","Car"],["sector","Model"],["year","Year","r"],["mileage","Miles","r"],["price","Asking","r"],["chg","Move","r"],["views","Views","r"],["vpd","Views/day","r"],["age","Days","r"],["status","Status"],["",""]];
+function renderCars(){
+  let cars=S.cars.filter(c=>(!fSector||c.sector===fSector)&&(!fGroup||c.groups.includes(fGroup)));
+  if(q){const t=q.toLowerCase();cars=cars.filter(c=>[c.name,c.title,c.seller,c.location,c.notes,c.sector].join(" ").toLowerCase().includes(t))}
+  const k=sortKey;cars.sort((a,b)=>{const x=k==="added"?a.id:a[k],y=k==="added"?b.id:b[k];if(x==null)return 1;if(y==null)return -1;return (x<y?-1:x>y?1:0)*(sortAsc?1:-1)});
+  $("#carCount").textContent=`${cars.length} shown`;
+  const gname=id=>S.groups.find(g=>g.id===id)?.name;
+  $("#cars").innerHTML=`<thead><tr>${COLS.map(([k,l,c])=>`<th class="${c||""} ${k?"sortable":""} ${k===sortKey?"sorted"+(sortAsc?" asc":""):""}" data-s="${k}">${l}</th>`).join("")}</tr></thead><tbody>${cars.map(c=>`<tr>
+    <td class="carname"><a href="${h(c.url)}" target="_blank" rel="noopener">${h(c.name)}</a><span class="sub">${h([c.seller,c.location].filter(Boolean).join(", "))}${c.groups.length?" · "+c.groups.map(gname).map(h).join(", "):""}</span>${c.notes?`<span class="sub" title="${h(c.notes)}">${h(c.notes)}</span>`:""}</td>
+    <td class="muted" style="font-size:12.5px">${h(c.sector)}</td><td class="r num">${c.year||"–"}</td><td class="r num">${c.mileage!=null?c.mileage.toLocaleString("en-GB"):"–"}</td>
+    <td class="r num" style="font-size:16px">${gbp(c.price)}</td><td class="r num ${c.chg?c.chg<0?"down":"up":""}">${c.chg?pct(c.chg):"–"}</td>
+    <td class="r num">${c.views!=null?c.views.toLocaleString("en-GB"):"–"}</td><td class="r num">${c.vpd!=null?Math.round(c.vpd):"–"}${Object.keys(c.spike).length?' <span class="spike" title="View spike"></span>':""}</td>
+    <td class="r num ${c.age>60?"down":""}">${c.age}</td><td><span class="pill ${c.status}">${c.status}</span></td>
+    <td class="r"><button class="btn small" data-log="${c.id}" type="button">Log</button></td></tr>`).join("")}</tbody>`;
+}
+function renderWho(){const c=crew();$("#who").textContent=c.code&&c.by?c.by:"View only";}
+
+/* ---------- interactions ---------- */
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-k],[data-m],[data-r],[data-g],[data-edit-g],[data-f],[data-clear-g],[data-s],[data-log]");if(!t)return;
+  if(t.dataset.k){open.has(t.dataset.k)?open.delete(t.dataset.k):open.add(t.dataset.k);renderHeat()}
+  else if(t.dataset.m){mode=t.dataset.m;document.querySelectorAll("#heatMode button").forEach(b=>b.classList.toggle("on",b===t));renderHeat()}
+  else if(t.dataset.r){rowsBy=t.dataset.r;open.clear();document.querySelectorAll("#heatRows button").forEach(b=>b.classList.toggle("on",b===t));renderHeat()}
+  else if(t.dataset.editG){e.stopPropagation();needCrew(()=>groupDialog(+t.dataset.editG))}
+  else if(t.dataset.g){const g=+t.dataset.g;fGroup=fGroup===g?null:g;fSector=null;renderGroups();renderFilters();renderCars();if(fGroup)$("#cars").scrollIntoView({behavior:"smooth",block:"start"})}
+  else if("clearG" in t.dataset){fGroup=null;renderGroups();renderFilters();renderCars()}
+  else if("f" in t.dataset&&t.matches(".chip")){fSector=t.dataset.f||null;if(!fSector)fGroup=null;renderGroups();renderFilters();renderCars()}
+  else if("s" in t.dataset&&t.dataset.s){if(sortKey===t.dataset.s)sortAsc=!sortAsc;else{sortKey=t.dataset.s;sortAsc=["name","sector","status"].includes(sortKey)}renderCars()}
+  else if(t.dataset.log)logDialog(+t.dataset.log);
+});
+const tip=$("#tip");
+$("#heat").addEventListener("mousemove",e=>{const i=e.target.closest("i[data-t]");if(!i){tip.hidden=true;return}
+  tip.textContent=i.dataset.t;tip.hidden=false;tip.style.left=Math.min(innerWidth-310,e.clientX+12)+"px";tip.style.top=(e.clientY+14)+"px"});
+$("#heat").addEventListener("mouseleave",()=>tip.hidden=true);
+$("#theme").onclick=()=>{const cur=document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");const n=cur==="light"?"dark":"light";document.documentElement.dataset.theme=n;LS.set("gated-theme",n)};
+
+function needCrew(then){const c=crew();if(c.code&&c.by)return then();whoDialog(then)}
+function whoDialog(then){
+  const d=$("#dlgWho"),f=$("#fWho");f.by.value=LS.get("gated-name")||"";f.code.value=LS.get("gated-code")||"";$("#whoErr").textContent="";
+  d.showModal();
+  f.onsubmit=async e=>{if(e.submitter?.value!=="ok")return;e.preventDefault();
+    const r=await fetch("/api/auth",{headers:{"X-Crew-Code":f.code.value.trim()}}).then(r=>r.json());
+    if(!r.ok){$("#whoErr").textContent="That code isn't right. Check the share link.";return}
+    LS.set("gated-name",f.by.value.trim());LS.set("gated-code",f.code.value.trim());d.close();renderWho();then&&then()};
+}
+$("#who").onclick=()=>whoDialog();
+
+function carDialog(car){
+  const d=$("#dlgCar"),f=$("#fCar");f.reset();$("#carErr").textContent="";
+  f.sector.innerHTML=S.sectors.map(s=>`<option>${h(s)}</option>`).join("");
+  $("#carGroups").innerHTML=S.groups.map(g=>`<label><input type="checkbox" value="${g.id}" ${car&&car.groups.includes(g.id)?"checked":""}>${h(g.name)}</label>`).join("")||`<span class="dim" style="font-size:12.5px;text-transform:none;letter-spacing:0">No groups yet</span>`;
+  $("#carTitle").textContent=car?"Edit car":"Add a car";$("#carSave").textContent=car?"Save":"Add car";
+  $("#carToday").hidden=!!car;$("#carArchive").hidden=!car;f.url.disabled=!!car;
+  if(car){for(const k of ["url","name","sector","seller","year","mileage","location","notes"])f[k].value=car[k]??""}
+  d.showModal();
+  f.onsubmit=async e=>{if(e.submitter?.value!=="ok")return;e.preventDefault();
+    const body=Object.fromEntries(new FormData(f));body.groups=[...$("#carGroups").querySelectorAll("input:checked")].map(i=>+i.value);
+    try{if(car)await api(`/api/cars/${car.id}`,body);else await api("/api/cars",body);d.close();toast(car?"Saved":"Car added");load()}catch(err){$("#carErr").textContent=err.message}};
+  $("#carArchive").onclick=async()=>{if(!confirm(`Remove "${car.name}" from the tracker?`))return;await api(`/api/cars/${car.id}/archive`,{});d.close();toast("Removed");load()};
+}
+$("#addBtn").onclick=()=>needCrew(()=>carDialog());
+
+function logDialog(id){
+  const c=S.cars.find(c=>c.id===id),d=$("#dlgLog"),f=$("#fLog");f.reset();$("#logErr").textContent="";
+  $("#logTitle").textContent=c.name;
+  $("#logSub").innerHTML=`<a href="${h(c.url)}" target="_blank" rel="noopener">Open the advert ↗</a> · ${h(c.sector)} · added by ${h(c.added_by)}${c.last_error?` · <span class="dim">auto-check: ${h(c.last_error)}</span>`:""}`;
+  f.price.placeholder=c.price??"";f.views.placeholder=c.views??"";
+  const sn=c.snaps.slice().reverse();
+  $("#logHist").innerHTML=sn.length?`<table><thead><tr><th>Day</th><th class="r">Asking</th><th class="r">Views</th><th>Status</th><th>By</th></tr></thead><tbody>${sn.map(s=>`<tr><td>${h(s.day)}</td><td class="r num">${gbp(s.price)}</td><td class="r num">${s.views??"–"}</td><td>${h(s.status||"")}</td><td class="dim">${h(s.by||s.source)}</td></tr>`).join("")}</tbody></table>`:`<span class="dim">Nothing logged yet</span>`;
+  d.showModal();
+  f.onsubmit=async e=>{if(e.submitter?.value!=="ok")return;e.preventDefault();
+    needCrew(async()=>{try{await api(`/api/cars/${id}/log`,Object.fromEntries(new FormData(f)));d.close();toast("Logged for today");load()}catch(err){$("#logErr").textContent=err.message;if(!d.open)d.showModal()}})};
+  $("#logEdit").onclick=()=>{d.close();needCrew(()=>carDialog(c))};
+}
+
+function groupDialog(gid){
+  const g=S.groups.find(x=>x.id===gid),d=$("#dlgGroup"),f=$("#fGroup");f.reset();$("#grpErr").textContent="";
+  $("#grpTitle").textContent=g?"Edit group":"New group";$("#grpDelete").hidden=!g;
+  if(g){f.name.value=g.name;f.description.value=g.description||""}
+  const bySec={};S.cars.forEach(c=>(bySec[c.sector]??=[]).push(c));
+  $("#grpCars").innerHTML=Object.entries(bySec).map(([s,cs])=>`<div class="sec">${h(s)}</div>`+cs.map(c=>`<label><input type="checkbox" value="${c.id}" ${g&&c.groups.includes(g.id)?"checked":""}>${h(c.name)} <span class="dim num" style="margin-left:auto">${gbpk(c.price)}</span></label>`).join("")).join("");
+  d.showModal();
+  f.onsubmit=async e=>{if(e.submitter?.value!=="ok")return;e.preventDefault();
+    const body={name:f.name.value,description:f.description.value,cars:[...$("#grpCars").querySelectorAll("input:checked")].map(i=>+i.value)};
+    try{await api(g?`/api/groups/${g.id}`:"/api/groups",body);d.close();toast("Group saved");load()}catch(err){$("#grpErr").textContent=err.message}};
+  $("#grpDelete").onclick=async()=>{if(!confirm(`Delete the group "${g.name}"? The cars stay on the tracker.`))return;await api(`/api/groups/${g.id}`,{delete:true});d.close();if(fGroup===g.id)fGroup=null;load()};
+}
+$("#newGroup").onclick=()=>needCrew(()=>groupDialog());
+
+async function load(){S=await api("/api/state");render()}
+load();setInterval(()=>{if(!document.querySelector("dialog[open]"))load()},120000);
+</script>
+</body>
+</html>

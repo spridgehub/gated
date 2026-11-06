@@ -1,0 +1,52 @@
+name: Add a car
+description: Put a listing on the Gated tracker
+title: "Add: "
+labels: [add-car]
+body:
+  - type: input
+    id: url
+    attributes: {label: Listing link, placeholder: "https://www.pistonheads.com/buy/listing/..."}
+    validations: {required: true}
+  - type: input
+    id: name
+    attributes: {label: Your name for it, placeholder: "Napier Green 675LT, Club Sport"}
+    validations: {required: true}
+  - type: dropdown
+    id: sector
+    attributes:
+      label: Model
+      options:
+        - Ferrari 430 Scuderia / 16M
+        - Ferrari F430 manual
+        - McLaren 675LT
+        - Aston Martin V12 manual
+        - Porsche 997.1 GT3 / RS
+        - Porsche 997.2 GT3 / RS
+        - Porsche 991.1 GT3
+        - Audi R8 V10 manual
+        - Other
+    validations: {required: true}
+  - type: input
+    id: price
+    attributes: {label: Asking price today (£)}
+  - type: input
+    id: views
+    attributes: {label: Views today, description: PistonHeads shows these under the photos}
+  - type: input
+    id: year
+    attributes: {label: Year}
+  - type: input
+    id: mileage
+    attributes: {label: Mileage}
+  - type: input
+    id: seller
+    attributes: {label: Seller}
+  - type: input
+    id: location
+    attributes: {label: Location}
+  - type: input
+    id: groups
+    attributes: {label: Groups, description: Existing group names, comma separated}
+  - type: textarea
+    id: notes
+    attributes: {label: Notes, description: Spec, history, anything to check}

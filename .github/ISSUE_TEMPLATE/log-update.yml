@@ -1,0 +1,23 @@
+name: Log an update
+description: Record today's asking price, view count or status for a car
+title: "Log: "
+labels: [log-update]
+body:
+  - type: input
+    id: car
+    attributes: {label: Car, description: "Filled in by the site's Log button (#id and name)"}
+    validations: {required: true}
+  - type: input
+    id: price
+    attributes: {label: Asking price (£)}
+  - type: input
+    id: views
+    attributes: {label: Views}
+  - type: dropdown
+    id: status
+    attributes:
+      label: Status
+      options: [No change, live, reserved, sold, gone]
+  - type: input
+    id: note
+    attributes: {label: Note}

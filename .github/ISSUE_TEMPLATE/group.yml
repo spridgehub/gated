@@ -1,0 +1,15 @@
+name: Make or edit a group
+description: Link cars you want to compare
+title: "Group: "
+labels: [group]
+body:
+  - type: input
+    id: name
+    attributes: {label: Group name, description: Use an existing name to replace that group's cars}
+    validations: {required: true}
+  - type: input
+    id: description
+    attributes: {label: What links them}
+  - type: textarea
+    id: cars
+    attributes: {label: Cars, description: "One per line: #id and name (the site fills this in)"}

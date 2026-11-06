@@ -1,0 +1,5 @@
+REPO=spridgehub/gated
+BUILD="/Users/ianspridgeon/projects/gated/.venv/bin/python -m gated.build"
+BRANCH=main
+PAGES=/docs
+SITE=https://spridgehub.github.io/gated/
