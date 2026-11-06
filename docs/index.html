@@ -154,7 +154,19 @@ section{position:relative;padding:84px 0 0;scroll-margin-top:60px}
 .badge.reserved{border-color:var(--accent-ink);color:var(--accent-ink)}
 .badge.sold{background:var(--pale);border-color:var(--pale);color:var(--on-accent)}
 .badge.gone{color:var(--ink-4)}
-.halo{margin-top:16px;font-size:14px;color:var(--ink-3)}
+.halo{margin-top:16px;font-size:14px;color:var(--ink-3);max-width:900px}
+.k2{font:700 11.5px/1 var(--font-head);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-4);margin-bottom:6px}
+svg.band{width:100%;display:block}
+.ptrack{position:relative;height:16px;margin:2px 6px 0}
+.ptrack::before{content:"";position:absolute;left:0;right:0;top:7px;height:2px;background:var(--line-strong);border-radius:2px}
+.ptrack .seg{position:absolute;top:5px;height:6px;border-radius:3px;background:var(--accent);opacity:.35}
+.ptrack .md{position:absolute;top:1px;width:2px;height:14px;margin-left:-1px;background:var(--ink-3);border-radius:1px}
+.ptrack i{position:absolute;top:2px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--accent);border:2px solid var(--deck)}
+.cars .car .stats{grid-template-columns:repeat(4,1fr)}
+.car .stats .fig,.car .stats .mv{display:block;font:700 19px/1 var(--font-head)}
+.badge.risk-high{border-color:var(--accent);color:var(--accent-ink)}
+.badge.risk-medium{border-color:var(--line-strong);color:var(--ink-2)}
+.badge.risk-low{border-color:var(--line);color:var(--ink-4)}
 .halo b{font:700 18px/1 var(--font-head);color:var(--ink-1)}
 
 /* groups */
@@ -255,7 +267,7 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
 <header class="nav"><div class="wrap">
   <a class="mark" href="#top" aria-label="Gated home"><span><b>GATED</b><i>by the numbers</i></span></a>
   <nav>
-    <a href="#heat">Heat</a><a href="#models">Models</a><a href="#groups">Groups</a><a href="#cars">Cars</a>
+    <a href="#heat">Heat</a><a href="#models">Models</a><a href="#outlook">Outlook</a><a href="#groups">Groups</a><a href="#cars">Cars</a>
     <button class="btn btn-accent" type="button" data-act="add">+ Add a car</button>
   </nav>
 </div></header>
@@ -293,10 +305,18 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
 
 <section id="models"><div class="wrap">
   <div class="sec-head">
-    <div><div class="rule"></div><h2 class="h-section">The models</h2><p>Each dot is a live car on that model's asking-price range; the cream tick is the median. Tap a model to see its cars.</p></div>
+    <div><div class="rule"></div><h2 class="h-section">The models</h2><p>Each dot is a live car on today's asking-price range (cream tick = median). Below it, the band shows where asks have been over 30 days. Tap a model to see its cars.</p></div>
   </div>
   <div class="models" id="modelGrid"></div>
   <div class="halo" id="halo"></div>
+</div></section>
+
+<section id="outlook"><div class="wrap">
+  <div class="sec-head">
+    <div><div class="rule"></div><h2 class="h-section">Outlook</h2><p class="finding" id="outHead"></p></div>
+  </div>
+  <div class="panel" style="padding:8px 14px"><div class="tablewrap" style="margin-top:0"><table id="outTable"></table></div></div>
+  <p class="halo">How it's worked out: 7 and 30-day moves come from a repeat-car price index, which follows the same cars day to day, so one cheap arrival or a dear car selling doesn't count as a market move. "Next 30 days" carries that index's recent trend forward, with the range showing how noisy it has been. It reads the trend in asking prices and is not a valuation. Cut risk on each car flags asks well above the model median, long listings, views behind its peers and earlier cuts.</p>
 </div></section>
 
 <section id="groups"><div class="wrap">
@@ -324,7 +344,7 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
       <div class="field"><label>Miles ≤</label><input id="mMax" inputmode="numeric" placeholder="any"></div>
       <div class="field"><label for="sort">Sort</label><select id="sort">
         <option value="price-asc">Price, low first</option><option value="price-desc">Price, high first</option>
-        <option value="move-asc">Biggest cut</option><option value="move-desc">Biggest rise</option>
+        <option value="move-asc">Biggest cut, 30 days</option><option value="move-desc">Biggest rise, 30 days</option><option value="week-asc">Biggest cut, 7 days</option><option value="pos-asc">Cheapest vs comparable cars</option><option value="risk-desc">Highest cut risk</option>
         <option value="vpd-desc">Most views/day</option><option value="miles-asc">Lowest miles</option>
         <option value="year-desc">Newest</option><option value="age-desc">Longest listed</option><option value="added-desc">Recently added</option></select></div>
       <span class="seg" id="viewMode"><button class="on" data-v="cards" type="button">Cards</button><button data-v="table" type="button">Table</button></span>
@@ -410,7 +430,8 @@ function enrich(c){
   c.P=P; c.lo=P.length?Math.min(...P.map(s=>s.price)):null; c.hi=P.length?Math.max(...P.map(s=>s.price)):null;
   c.asOf=d=>{let p=null;for(const s of P){if(s.day<=d)p=s.price;else break}return p};
   const ago=n=>c.asOf(dayStr(new Date(at(S.today)-n*DAY)))??c.firstPrice;
-  c.chg7=c.price&&ago(7)?c.price/ago(7)-1:null; c.chg30=c.price&&ago(30)?c.price/ago(30)-1:null;
+  const hist=P.length>1&&P[0].day<S.today;
+  c.chg7=hist&&ago(7)?c.price/ago(7)-1:null; c.chg30=hist&&ago(30)?c.price/ago(30)-1:null;
   c.goneOn=sn.find(s=>s.status==="sold"||s.status==="gone")?.day||null;
   c.cut30=Object.entries(c.pDay).some(([d,v])=>v<0&&diffDays(d,S.today)<=30);
   c.hay=[c.name,c.sector,c.seller,c.location,c.notes,c.year,c.status,...c.groups.map(gName)].join(" ").toLowerCase();
@@ -462,12 +483,13 @@ function stats(cars){
 function cutRisk(c,st){
   if(!live(c)||c.price==null)return null;
   const why=[];
-  if(st.median&&c.price>=st.median*1.1)why.push(`${pct(c.price/st.median-1,0)} above the model median`);
+  if(st.median&&c.price>=st.median*1.1)why.push(`${pct(c.price/st.median-1,0)} above comparable cars`);
   if(c.listedKnown&&c.age>60)why.push(`listed ${c.age} days`);
   const peers=S.cars.filter(x=>x.sector===c.sector&&live(x)&&x.vpd!=null).map(x=>x.vpd);
   if(c.vpd!=null&&peers.length>2&&c.vpd<median(peers)*.6)why.push("views lag its peers");
   if(c.cut30)why.push("already cut this month");
-  const lvl=why.length>=3||(c.listedKnown&&c.age>120&&why.length>=2)?"High":why.length===2?"Medium":"Low";
+  const pts=why.length+(c.listedKnown&&c.age>180?1:0);   // a listing past six months counts double
+  const lvl=pts>=3?"High":pts===2?"Medium":"Low";
   return {lvl,why};
 }
 function rows(by){
@@ -486,13 +508,15 @@ function renderHero(){
   const cuts=S.cars.filter(c=>Object.entries(c.pDay).some(([d,v])=>d>wk&&v<0)).length;
   const rises=S.cars.filter(c=>Object.entries(c.pDay).some(([d,v])=>d>wk&&v>0)).length;
   const tight=rows("sector").filter(r=>r.cars.filter(live).length<=3);
-  const w=S.cars.filter(c=>c.verdict==="W").length;
+  const all=stats(S.cars);
   const first=S.cars.map(c=>c.firstSeen).sort()[0];
   $("#asof").textContent=`UK market · updated ${new Date(S.built).toLocaleString("en-GB",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}`;
   $("#ticker").innerHTML=[
     [L.length,"live cars"],[gbpk(L.reduce((x,c)=>x+(c.price||0),0)),"total asking"],
     [`${cuts}<small>cut</small> ${rises}<small>up</small>`,"price moves this week"],
-    [tight.length,"models with ≤3 for sale"],[S.cars.length?Math.round(w/S.cars.length*100)+"<small>%</small>":"–","30-day win rate"],
+    [all.chg7==null?"–":`<span style="${all.chg7>0?"color:var(--accent-ink)":all.chg7<0?"color:var(--pale)":""}">${pct(all.chg7)}</span>`,"market, last 7 days"],
+    [all.chg30==null?"–":`<span style="${all.chg30>0?"color:var(--accent-ink)":all.chg30<0?"color:var(--pale)":""}">${pct(all.chg30)}</span>`,"market, last 30 days"],
+    [tight.length,"models with ≤3 for sale"],
     [diffDays(first,S.today)+1,"days tracked"],
   ].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join("");
   $("#quick").innerHTML=S.sectors.filter(s=>S.cars.some(c=>c.sector===s)).map(s=>`<button class="chip" type="button" data-qm="${h(s)}">${h(s)} <span class="n">${S.cars.filter(c=>c.sector===s&&live(c)).length}</span></button>`).join("");
@@ -513,7 +537,7 @@ function renderHeat(){
   let out="";
   for(const r of R){
     const o=openRows.has(r.key);
-    const last=heatMode==="price"?mean(r.cars.map(c=>c.chg)):r.cars.reduce((x,c)=>x+(c.vpd||0),0);
+    const last=heatMode==="price"?stats(r.cars).chg30:r.cars.reduce((x,c)=>x+(c.vpd||0),0);
     out+=`<div class="lab ${o?"openrow":""}" data-row="${h(r.key)}"><span class="tw">▶</span>${h(r.label)} <span class="n">${r.cars.length}</span></div>`;
     out+=`<div class="cells" style="${cols}">${D.map(d=>{const v=aggDay(r.cars,d);return cell(v,d,`${r.label} · ${fmtD(d)}: ${v==null?"no data yet":heatMode==="price"?"average move "+pct(v,2):Math.round(v)+" views"}`,heatMode==="views"&&r.cars.some(c=>c.spike[d]))}).join("")}</div>`;
     out+=`<div class="now ${heatMode==="price"&&last?last>0?"up":"down":""}">${heatMode==="price"?pct(last):last?Math.round(last)+"/d":"–"}</div>`;
@@ -521,18 +545,18 @@ function renderHeat(){
       out+=`<div class="lab carrow" title="${h(c.name)}">${h(c.name)}</div><div class="cells" style="${cols}">${D.map(d=>{
         const v=heatMode==="price"?(d>c.firstSeen&&c.price!=null?(c.pDay[d]||0):null):(c.vDay[d]??null);
         return cell(v,d,`${c.name} · ${fmtD(d)}: ${v==null?"no data yet":heatMode==="price"?(v?pct(v,2):"no change"):Math.round(v)+" views"+(c.spike[d]?" · spike":"")}`,heatMode==="views"&&c.spike[d])}).join("")}</div>`;
-      out+=`<div class="now ${heatMode==="price"&&c.chg?c.chg>0?"up":"down":""}" style="font-size:14px">${heatMode==="price"?gbpk(c.price):c.vpd!=null?Math.round(c.vpd)+"/d":"–"}</div>`;
+      out+=`<div class="now ${heatMode==="price"&&c.chg?c.chg>0?"up":"down":""}" style="font-size:14px">${heatMode==="price"?pct(c.chg30):c.vpd!=null?Math.round(c.vpd)+"/d":"–"}</div>`;
     }
   }
   if(!R.length)out=`<div class="muted" style="grid-column:1/-1">No groups yet.</div>`;
-  out+=`<div></div><div class="axis" style="${cols}">${D.map((d,i)=>i%7===2?`<span style="grid-column:${i+1}/span 7">${fmtD(d)}</span>`:"").join("")}</div><div class="axis" style="display:block;text-align:right">${heatMode==="price"?"since first":"views/day"}</div>`;
+  out+=`<div></div><div class="axis" style="${cols}">${D.map((d,i)=>i%7===2?`<span style="grid-column:${i+1}/span 7">${fmtD(d)}</span>`:"").join("")}</div><div class="axis" style="display:block;text-align:right">${heatMode==="price"?"30 days":"views/day"}</div>`;
   $("#heatGrid").innerHTML=out;
   $("#legend").innerHTML=heatMode==="price"
     ?`<span>Daily change in asking price (model and group rows average their cars)</span><span>cut</span><span class="ramp p"></span><span>rise</span><span class="dim">full strength at 5%</span>`
     :`<span>Views gained per day</span><span>0</span><span class="ramp v"></span><span>${Math.round(vMax)}</span><span><span class="spk"></span> spike: +25 views or +15% in a day, often ahead of a weekend deposit</span>`;
   let f;
-  if(heatMode==="price"){const m=R.map(r=>({r,m:mean(r.cars.map(c=>c.chg))})).filter(x=>x.m).sort((a,b)=>Math.abs(b.m)-Math.abs(a.m));
-    f=m.length?`<b>${h(m[0].r.label)}</b> has moved most: ${pct(m[0].m)} on average since first seen.`:"No asking price has moved yet. This is the baseline."}
+  if(heatMode==="price"){const m=R.map(r=>({r,m:stats(r.cars).chg30})).filter(x=>x.m).sort((a,b)=>Math.abs(b.m)-Math.abs(a.m));
+    f=m.length?`<b>${h(m[0].r.label)}</b> has moved most: ${pct(m[0].m)} over 30 days on the repeat-car index.`:"No asking price has moved yet. This is the baseline."}
   else{const s=S.cars.filter(c=>c.vpd).sort((a,b)=>b.vpd-a.vpd);f=s.length?`<b>${h(s[0].name)}</b> is pulling the most traffic, ${Math.round(s[0].vpd)} views a day.`:"View momentum starts once a car has view counts logged on two days."}
   $("#heatHead").innerHTML=f;
 }
@@ -544,18 +568,56 @@ function renderModels(){
     const L=r.cars.filter(live), pr=L.map(c=>c.price).filter(x=>x!=null);
     const lo=Math.min(...pr),hi=Math.max(...pr),md=median(pr),span=hi-lo||1;
     const pos=v=>pr.length>1?((v-lo)/span*100).toFixed(1):50;
-    const w=r.cars.filter(c=>c.verdict==="W").length,l=r.cars.filter(c=>c.verdict==="L").length,d=r.cars.length-w-l;
-    const m=mean(r.cars.map(c=>c.chg));
+    const st=stats(r.cars);
+    const col=v=>v>0?"color:var(--accent-ink)":v<0?"color:var(--pale)":"";
     return `<button class="panel model ${F.m===r.label?"on":""}" type="button" data-qm="${h(r.label)}">
       <div class="top"><div><div class="kicker" style="font-size:12px">${L.length<=3?'<span class="badge alert">Supply ≤3</span>':"&nbsp;"}</div><h3 style="margin-top:8px">${h(r.label)}</h3></div><div class="live">${L.length}<small>live</small></div></div>
       ${pr.length?`<div><div class="strip">${L.filter(c=>c.price!=null).map(c=>`<i class="${c.status==="reserved"?"r":""}" style="left:${pos(c.price)}%" title="${h(c.name)} · ${gbp(c.price)}"></i>`).join("")}<span class="med" style="left:${pos(md)}%"></span></div>
       <div class="range"><span>${gbpk(lo)}</span><span class="muted" style="font-size:13px">median ${gbpk(md)}</span><span>${gbpk(hi)}</span></div></div>`:`<div class="muted" style="font-size:14px">No live car with a price.</div>`}
-      <div class="mstats"><div><b class="${m?m>0?"up":"":""}" style="${m>0?"color:var(--accent-ink)":m<0?"color:var(--pale)":""}">${pct(m)}</b><span>avg move</span></div><div><b>${w}–${l}–${d}</b><span>W–L–D, 30 days</span></div><div><b>${r.cars.reduce((x,c)=>x+(c.vpd||0),0)?Math.round(r.cars.reduce((x,c)=>x+(c.vpd||0),0)):"–"}</b><span>views/day</span></div></div>
+      <div><div class="k2">Where asks have been, 30 days</div>${bandChart(st)}</div>
+      <div class="mstats"><div><b style="${col(st.chg7)}">${pct(st.chg7)}</b><span>7 days</span></div><div><b style="${col(st.chg30)}">${pct(st.chg30)}</b><span>30 days</span></div><div><b style="${st.proj?col(st.proj.mid):""}">${st.proj?pct(st.proj.mid):"–"}</b><span>next 30 days</span></div></div>
     </button>`}).join("");
   const med=s=>median(S.cars.filter(c=>c.sector===s&&live(c)).map(c=>c.price));
   const pairs=[["Porsche 997.2 GT3 / RS","Porsche 991.1 GT3","997.2 GT3 RS to 991.1 GT3"],["Porsche 997.1 GT3 / RS","Porsche 991.1 GT3","997.1 to 991.1 GT3"],["Ferrari 430 Scuderia / 16M","Ferrari F430 manual","Scuderia/16M to F430 manual"]];
   const hd=pairs.map(([a,b,l])=>{const x=med(a),y=med(b);return x&&y?`${l} <b>${(x/y).toFixed(2)}×</b>`:null}).filter(Boolean);
   $("#halo").innerHTML=hd.length?`Halo drag, median asking price: ${hd.join(" &nbsp;·&nbsp; ")}`:"";
+}
+
+/* floor–ceiling band of live asks per day with the median line; one day of data shows as a single bar */
+function bandChart(st,h2=46){
+  const B=st.band, pts=B.map((b,i)=>b?{i,...b}:null).filter(Boolean);
+  if(!pts.length)return `<div class="muted" style="font-size:13px">No prices yet.</div>`;
+  const lo=Math.min(...pts.map(p=>p.lo)),hi=Math.max(...pts.map(p=>p.hi)),rg=hi-lo||1;
+  const X=i=>(i/(NDAYS-1)*100).toFixed(2), Y=v=>(h2-3-((v-lo)/rg)*(h2-6)).toFixed(1);
+  let svg;
+  if(pts.length===1){const p=pts[0];svg=`<rect x="${(+X(p.i)-1.4).toFixed(2)}" width="1.4" y="${Y(p.hi)}" height="${Math.max(2,Y(p.lo)-Y(p.hi))}" fill="var(--accent)" opacity=".35"/><rect x="${(+X(p.i)-1.4).toFixed(2)}" width="1.4" y="${Y(p.md)-1}" height="2" fill="var(--ink-1)"/>`}
+  else svg=`<polygon points="${pts.map(p=>X(p.i)+","+Y(p.hi)).join(" ")} ${pts.slice().reverse().map(p=>X(p.i)+","+Y(p.lo)).join(" ")}" fill="var(--accent)" opacity=".22"/><polyline points="${pts.map(p=>X(p.i)+","+Y(p.md)).join(" ")}" fill="none" stroke="var(--ink-1)" stroke-width="1.6" vector-effect="non-scaling-stroke"/>`;
+  return `<svg class="band" viewBox="0 0 100 ${h2}" preserveAspectRatio="none" style="height:${h2}px"><line x1="0" x2="100" y1="${h2-1}" y2="${h2-1}" stroke="var(--line)" vector-effect="non-scaling-stroke"/>${svg}</svg>
+    <div class="range" style="font-size:13px;margin-top:4px"><span>low ${gbpk(st.lo30)}</span><span class="muted">${pts.length} day${pts.length>1?"s":""} of checks</span><span>high ${gbpk(st.hi30)}</span></div>`;
+}
+
+/* ---------- outlook ---------- */
+function renderOutlook(){
+  const R=rows("sector").map(r=>({r,st:stats(r.cars)}));
+  const col=v=>v>0?"color:var(--accent-ink)":v<0?"color:var(--pale)":"";
+  const drivers=st=>{const d=[];
+    if(st.live<=3)d.push(`only ${st.live} for sale`);
+    if(st.liveWk&&st.live!==st.liveWk)d.push(`supply ${st.live>st.liveWk?"up":"down"} ${Math.abs(st.live-st.liveWk)} this week`);
+    if(st.cutShare>=.25)d.push(`${Math.round(st.cutShare*100)}% cut this month`);
+    if(st.ageMed!=null)d.push(`median ${st.ageMed} days listed`);
+    if(st.vpd)d.push(`${Math.round(st.vpd)} views/day`);
+    return d.join(" · ")||"–"};
+  const days=R[0]?.st.n||0;
+  const firm=R.filter(x=>x.st.proj).sort((a,b)=>b.st.proj.mid-a.st.proj.mid);
+  $("#outHead").innerHTML=firm.length
+    ?`<b>${h(firm[0].r.label)}</b> has the firmest trend (${pct(firm[0].st.proj.mid)} over the next 30 days); <b>${h(firm.at(-1).r.label)}</b> the softest (${pct(firm.at(-1).st.proj.mid)}).`
+    :`Projections appear after 7 days of morning checks (day ${days} so far). Until then, supply and listing age are the signals to watch.`;
+  $("#outTable").innerHTML=`<thead><tr><th>Model</th><th class="r">Live</th><th class="r">Median now</th><th class="r">30-day range</th><th class="r">7 days</th><th class="r">30 days</th><th class="r">Next 30 days</th><th>Confidence</th><th>What's driving it</th></tr></thead><tbody>${R.map(({r,st})=>`<tr>
+    <td><button class="linkbtn" style="color:var(--ink-1);font-weight:550;padding:0" data-qm="${h(r.label)}" type="button">${h(r.label)}</button></td>
+    <td class="r f">${st.live}</td><td class="r f">${gbpk(st.median)}</td><td class="r f">${gbpk(st.lo30)}–${gbpk(st.hi30)}</td>
+    <td class="r f" style="${col(st.chg7)}">${pct(st.chg7)}</td><td class="r f" style="${col(st.chg30)}">${pct(st.chg30)}</td>
+    <td class="r f" style="${st.proj?col(st.proj.mid):""}">${st.proj?`${pct(st.proj.mid)}<span class="sub">${pct(st.proj.lo,0)} to ${pct(st.proj.hi,0)}</span>`:`<span class="dim" style="font:500 12.5px var(--font-ui)">after 7 days</span>`}</td>
+    <td>${st.proj?`<span class="badge">${st.proj.conf}</span>`:"–"}</td><td class="muted" style="font-size:13px">${drivers(st)}</td></tr>`).join("")}</tbody>`;
 }
 
 /* ---------- groups ---------- */
@@ -569,10 +631,10 @@ function spark(cars,cls=""){
 }
 function renderGroups(){
   $("#groupGrid").innerHTML=S.groups.map(g=>{
-    const cars=S.cars.filter(c=>c.groups.includes(g.id)), L=cars.filter(live), pr=L.map(c=>c.price).filter(x=>x!=null), m=mean(cars.map(c=>c.chg));
+    const cars=S.cars.filter(c=>c.groups.includes(g.id)), L=cars.filter(live), pr=L.map(c=>c.price).filter(x=>x!=null), st=stats(cars), m=st.chg30;
     return `<div class="panel group ${F.g==g.id?"on":""}" data-qg="${g.id}" role="button" tabindex="0">
       <div><h3>${h(g.name)}</h3><div class="desc">${h(g.description||"")}</div></div>
-      <div class="mstats" style="border:0;padding:0;grid-template-columns:repeat(4,1fr)"><div><b>${L.length}</b><span>live</span></div><div><b>${gbpk(pr.length?Math.min(...pr):null)}</b><span>floor</span></div><div><b>${gbpk(pr.length?Math.max(...pr):null)}</b><span>ceiling</span></div><div><b style="${m>0?"color:var(--accent-ink)":m<0?"color:var(--pale)":""}">${pct(m)}</b><span>move</span></div></div>
+      <div class="mstats" style="border:0;padding:0;grid-template-columns:repeat(4,1fr)"><div><b>${L.length}</b><span>live</span></div><div><b>${gbpk(pr.length?Math.min(...pr):null)}</b><span>floor</span></div><div><b>${gbpk(pr.length?Math.max(...pr):null)}</b><span>ceiling</span></div><div><b style="${m>0?"color:var(--accent-ink)":m<0?"color:var(--pale)":""}">${pct(m)}</b><span>30 days</span></div></div>
       ${spark(cars)}
       <div class="foot"><span>by ${h(g.created_by||"?")}</span><button class="btn btn-ghost btn-sm" type="button" data-editg="${g.id}">Edit cars</button></div></div>`}).join("")||`<div class="muted">No groups yet.</div>`;
 }
@@ -597,31 +659,56 @@ function filtered(){
   const [pmin,pmax,ymin,ymax,mmax]=[F.pmin,F.pmax,F.ymin,F.ymax,F.mmax].map(n);
   let cs=S.cars.filter(c=>terms.every(t=>c.hay.includes(t))&&(!F.m||c.sector===F.m)&&(!F.g||c.groups.includes(+F.g))&&(!F.st||c.status===F.st)
     &&(pmin==null||(c.price??-1)>=pmin)&&(pmax==null||(c.price??1e12)<=pmax)&&(ymin==null||(c.year??0)>=ymin)&&(ymax==null||(c.year??1e4)<=ymax)&&(mmax==null||(c.mileage??1e9)<=mmax));
-  const [k,dir]=F.sort.split("-"), key={price:"price",move:"chg",vpd:"vpd",miles:"mileage",year:"year",age:"age",added:"id"}[k];
+  const [k,dir]=F.sort.split("-"), key={price:"price",move:"chg30",week:"chg7",vpd:"vpd",miles:"mileage",year:"year",age:"age",added:"id",risk:"riskN",pos:"pos"}[k];
   cs.sort((a,b)=>{const x=a[key],y=b[key];if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return (x-y)*(dir==="asc"?1:-1)});
   return cs;
 }
-function mvHtml(c){return c.chg?`<span class="mv ${c.chg>0?"up":"down"}">${pct(c.chg)}</span>`:""}
+function mv(v,cls="mv"){return v?`<span class="${cls} ${v>0?"up":"down"}">${pct(v)}</span>`:`<span class="${cls}">${v===0?"0.0%":"–"}</span>`}
+// per-model stats once per render, and each car's position against its model
+// comparable cars: same model and same variant (16M vs Scuderia, RS 4.0 vs RS vs GT3, Spider vs coupe)
+function variant(c){const n=c.name+" "+(c.notes||"");
+  return /16M/i.test(n)?"16M":/RS 4\.0/i.test(n)?"RS 4.0":/GT3 RS|\bRS\b/.test(n)?"RS":/Spider|Spyder/i.test(n)?"Spider":"base"}
+function scoreCars(){
+  const ST={},VT={};for(const r of rows("sector"))ST[r.label]=stats(r.cars);
+  for(const c of S.cars){
+    const peers=S.cars.filter(x=>x.sector===c.sector&&variant(x)===variant(c));
+    const key=c.sector+"|"+variant(c);
+    if(!(key in VT))VT[key]=peers.filter(live).length>=2?stats(peers):null;
+    const st=VT[key];c.st=ST[c.sector];c.peer=st;c.peerLabel="comparable";
+    c.risk=cutRisk(c,st||{median:null});c.riskN=c.risk?{Low:0,Medium:1,High:2}[c.risk.lvl]:null;
+    c.pos=st&&st.median&&c.price?c.price/st.median-1:null}
+}
+// the model's 30-day low–high as a track; this car's own range as a bar, today's ask as a dot
+function posTrack(c){
+  const st=c.st;if(!st||st.lo30==null||c.price==null)return "";
+  const lo=st.lo30,hi=st.hi30,rg=hi-lo||1,X=v=>Math.max(0,Math.min(100,(v-lo)/rg*100)).toFixed(1);
+  return `<div class="ptrack" title="Where this car sits in the ${h(c.sector)} range over 30 days"><span class="seg" style="left:${X(c.lo)}%;width:${Math.max(.8,X(c.hi)-X(c.lo))}%"></span>${c.peer?.median?`<span class="md" style="left:${X(c.peer.median)}%"></span>`:""}<i style="left:${X(c.price)}%"></i></div>
+    <div class="range" style="font-size:12.5px"><span>${gbpk(lo)}</span><span class="muted">${c.pos==null?"":Math.abs(c.pos)<.005?`at the ${c.peerLabel} median`:`${pct(c.pos,0)} vs ${c.peerLabel} median`}</span><span>${gbpk(hi)}</span></div>`;
+}
+const riskBadge=c=>c.risk?`<span class="badge risk-${c.risk.lvl.toLowerCase()}" title="${h(c.risk.why.length?"Cut risk: "+c.risk.why.join(", "):"No cut signals")}">${c.risk.lvl} cut risk</span>`:"";
 function renderCars(){
+  scoreCars();
   const cs=filtered();
   $("#count").textContent=`${cs.length} of ${S.cars.length} cars`;
   if(!cs.length){$("#results").innerHTML=`<div class="empty">No cars match. <button class="linkbtn" data-act="reset" type="button">Clear the search</button> or <button class="linkbtn" data-act="add" type="button">add one</button>.</div>`;return}
   if(F.v==="table"){
-    $("#results").innerHTML=`<div class="tablewrap"><table><thead><tr><th data-sk="added">Car</th><th>Model</th><th class="r" data-sk="year">Year</th><th class="r" data-sk="miles">Miles</th><th class="r" data-sk="price">Asking</th><th class="r" data-sk="move">Move</th><th class="r">Views</th><th class="r" data-sk="vpd">/day</th><th class="r" data-sk="age">Days</th><th>Status</th><th></th></tr></thead><tbody>${cs.map(c=>`<tr>
+    $("#results").innerHTML=`<div class="tablewrap"><table><thead><tr><th data-sk="added">Car</th><th>Model</th><th class="r" data-sk="year">Year</th><th class="r" data-sk="miles">Miles</th><th class="r" data-sk="price">Asking</th><th class="r">Range seen</th><th class="r" data-sk="week">7 days</th><th class="r" data-sk="move">30 days</th><th class="r" data-sk="pos">vs median</th><th class="r" data-sk="vpd">Views/day</th><th class="r" data-sk="age">Days</th><th data-sk="risk">Cut risk</th><th>Status</th><th></th></tr></thead><tbody>${cs.map(c=>`<tr>
       <td><a href="${h(c.url)}" target="_blank" rel="noopener">${h(c.name)}</a><span class="sub">${h([c.seller,c.location].filter(Boolean).join(", "))}</span></td>
       <td class="muted" style="font-size:13px">${h(c.sector)}</td><td class="r f">${c.year??"–"}</td><td class="r f">${c.mileage!=null?c.mileage.toLocaleString("en-GB"):"–"}</td>
-      <td class="r f" style="font-size:19px">${gbp(c.price)}</td><td class="r">${mvHtml(c)||"–"}</td><td class="r f">${c.views!=null?c.views.toLocaleString("en-GB"):"–"}</td>
-      <td class="r f">${c.vpd!=null?Math.round(c.vpd):"–"}${Object.keys(c.spike).length?' <span class="spk"></span>':""}</td><td class="r f">${c.age}</td>
+      <td class="r f" style="font-size:19px">${gbp(c.price)}</td><td class="r f" style="font-size:15px">${c.lo==null?"–":c.lo===c.hi?gbpk(c.lo):gbpk(c.lo)+"–"+gbpk(c.hi)}</td>
+      <td class="r">${mv(c.chg7)}</td><td class="r">${mv(c.chg30)}</td><td class="r f" style="font-size:15px">${c.pos==null?"–":pct(c.pos,0)}</td>
+      <td class="r f">${c.vpd!=null?Math.round(c.vpd):"–"}${Object.keys(c.spike).length?' <span class="spk"></span>':""}</td><td class="r f">${c.listedKnown?c.age:"–"}</td>
+      <td>${c.risk?`<span class="badge risk-${c.risk.lvl.toLowerCase()}" title="${h(c.risk.why.join(", ")||"No cut signals")}">${c.risk.lvl}</span>`:"–"}</td>
       <td><span class="badge ${c.status}">${c.status}</span></td><td class="r"><button class="btn btn-ghost btn-sm" type="button" data-log="${c.id}">Log</button></td></tr>`).join("")}</tbody></table></div>`;
     return;
   }
   $("#results").innerHTML=`<div class="cars">${cs.map(c=>`<article class="panel car">
-    <div class="top"><span class="kicker">${h(c.sector)}</span><span class="badge ${c.status}">${c.status}</span></div>
+    <div class="top"><span class="kicker">${h(c.sector)}</span><span style="display:flex;gap:6px">${riskBadge(c)}<span class="badge ${c.status}">${c.status}</span></span></div>
     <h3><a href="${h(c.url)}" target="_blank" rel="noopener">${h(c.name)}</a></h3>
     <div class="meta">${[c.year,c.mileage!=null?c.mileage.toLocaleString("en-GB")+" mi":null,[c.seller,c.location].filter(Boolean).join(", ")].filter(Boolean).map(h).join(" · ")}</div>
-    <div class="price"><b>${gbp(c.price)}</b>${mvHtml(c)}${c.firstPrice&&c.chg?`<span class="dim" style="font-size:13px">was ${gbp(c.firstPrice)}</span>`:""}</div>
-    ${c.snaps.filter(s=>s.price!=null).length>1?spark([c],"sl"):""}
-    <div class="stats"><div><b>${c.views!=null?c.views.toLocaleString("en-GB"):"–"}</b><span>views</span></div><div><b>${c.vpd!=null?Math.round(c.vpd):"–"}${Object.keys(c.spike).length?' <span class="spk" title="View spike"></span>':""}</b><span>views/day</span></div><div><b>${c.age}</b><span>days ${c.listed_at?"listed":"tracked"}</span></div></div>
+    <div class="price"><b>${gbp(c.price)}</b>${c.lo!=null&&c.lo!==c.hi?`<span class="dim" style="font-size:13px">has been ${gbp(c.lo)} to ${gbp(c.hi)}</span>`:""}</div>
+    ${posTrack(c)}
+    <div class="stats"><div>${mv(c.chg7,"fig")}<span>7 days</span></div><div>${mv(c.chg30,"fig")}<span>30 days</span></div><div><b>${c.vpd!=null?Math.round(c.vpd):c.views!=null?c.views.toLocaleString("en-GB"):"–"}${Object.keys(c.spike).length?' <span class="spk" title="View spike"></span>':""}</b><span>${c.vpd!=null?"views/day":"views"}</span></div><div><b>${c.listedKnown?c.age:"–"}</b><span>days listed</span></div></div>
     ${c.notes?`<p class="notes" title="${h(c.notes)}">${h(c.notes)}</p>`:""}
     ${c.groups.length?`<div class="tags">${c.groups.map(g=>`<button class="tag" type="button" data-qg="${g}">${h(gName(g))}</button>`).join("")}</div>`:""}
     <div class="acts"><a class="btn btn-ghost btn-sm" href="${h(c.url)}" target="_blank" rel="noopener">Open advert ↗</a><button class="btn btn-ghost btn-sm" type="button" data-log="${c.id}">Log price / views</button></div>
@@ -701,7 +788,7 @@ fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(d=>{
   $("#fModel").innerHTML=`<option value="">All</option>`+S.sectors.filter(s=>S.cars.some(c=>c.sector===s)).map(s=>`<option>${h(s)}</option>`).join("");
   $("#fGroup").innerHTML=`<option value="">All</option>`+S.groups.map(g=>`<option value="${g.id}">${h(g.name)}</option>`).join("");
   const deep=readHash();syncInputs();
-  renderHero();renderHeat();renderModels();renderGroups();renderCars();
+  scoreCars();renderHero();renderHeat();renderModels();renderOutlook();renderGroups();renderCars();
   $("#foot").textContent=`Gated · ${S.cars.length} cars tracked · prices and views read from the live adverts each morning at 6:30 and logged by the crew. A blank means the advert does not show it.`;
   if(deep)$("#cars").scrollIntoView();
 }).catch(()=>{$("#results").innerHTML=`<div class="empty">Couldn't load the data. Try again in a minute.</div>`});
