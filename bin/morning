@@ -1,0 +1,9 @@
+#!/bin/bash
+# Morning run (launchd, 06:30): check every live listing in headless Chrome, apply crew requests, publish.
+set -uo pipefail
+cd "$(dirname "$0")/.."
+echo "=== morning $(date '+%F %T')"
+git pull -q --rebase origin main 2>/dev/null || true
+.venv/bin/python -m gated.daily || echo "check failed: $?"
+.venv/bin/python -m gated.ingest || echo "ingest failed: $?"
+~/bin/ship . -m "Morning check $(date '+%Y-%m-%d')"

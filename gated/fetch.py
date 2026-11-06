@@ -135,9 +135,15 @@ def parse(html, text, final_url=""):
     m = re.search(r'\\?"location\\?":\\?"([^"\\]{2,60})', html)
     if m and "pistonheads" in final_url:
         r["location"] = m.group(1)
-    m = re.search(r"([\d,]+)\s+Views?\b", text)
+    m = re.search(r"(\d[\d,]*) Views?\b", text)
     if m:
         r["views"] = _int(m.group(1))
+    if r["price"] is None:
+        m = re.search(r"for £([\d,]{4,})", r["title"] or "") or re.search(r"£(\d{2,3},\d{3}(?:,\d{3})?)", text[:6000])
+        r["price"] = _int(m.group(1)) if m else None
+    if r["mileage"] is None:
+        m = re.search(r"\b(\d{1,3}(?:,\d{3})*|\d+)\s*(?:miles|mi)\b", text[:8000], re.I)
+        r["mileage"] = _int(m.group(1)) if m else None
     if r["year"] is None and r["title"]:
         m = re.search(r"\b(19[89]\d|20[0-3]\d)\b", r["title"])
         r["year"] = int(m.group(1)) if m else None
@@ -146,8 +152,7 @@ def parse(html, text, final_url=""):
         r["status"] = "gone"
     elif any(p in low for p in SOLD_PHRASES) or any(p in html.lower() for p in SOLD_PHRASES[2:]):
         r["status"] = "sold"
-    elif re.search(r"\b(reserved|under offer|sale agreed|deposit taken)\b", low[:6000]) and \
-            "available to reserve" not in low[:6000]:
+    elif re.search(r"(?<!rights )\b(reserved|under offer|sale agreed|deposit taken)\b", low[:6000]):
         r["status"] = "reserved"
     if r["title"]:
         r["title"] = re.sub(r"\s*[-|]\s*(PistonHeads|Auto ?Trader).*$", "", r["title"], flags=re.I).strip()[:200]
@@ -202,6 +207,9 @@ class Browser:
                 return {"status": "gone", "http": code}
             if code >= 400:
                 return {"error": f"The site refused the check (HTTP {code})", "http": code}
+            ids = re.findall(r"\d{6,}", urlparse(url).path)
+            if ids and ids[-1] not in page.url:
+                return {"status": "gone", "http": code, "note": "advert redirected away"}
             r = parse(html, text, page.url)
             r["http"] = code
             return r

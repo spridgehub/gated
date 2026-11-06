@@ -5,25 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Gated · UK analogue supercars, by the numbers</title>
 <meta name="description" content="A shared tracker of UK analogue supercars: Scuderia, F430 manual, 675LT, V12 Vantage, 997 and 991 GT3, R8 V10 manual. Asking prices, moves and view momentum, from the live adverts.">
-<meta name="theme-color" content="#07101f">
+<meta name="theme-color" content="#0b1a14">
 <meta property="og:title" content="Gated · UK analogue supercars, by the numbers">
 <meta property="og:description" content="Asking prices, moves and view momentum for the UK's analogue supercars, from the live adverts.">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
-/* Gated: the Posh On Paper brand layer, re-read for cars.
-   Navy surfaces, one blue, white ink. Condensed scoreboard face for headlines and figures, an italic serif
-   accent, tabular numbers because every price gets compared down a column. Borders only, 6px controls,
-   14px panels, pill buttons. Data colour stays in the family: blue means the price firmed or views rose,
-   pale white-grey means it softened; never a new hue. */
+/* Gated: the Posh On Paper layout in British Racing Green.
+   Deep racing-green surfaces, cream ink, one brass accent, like a classic dealer brochure. Condensed scoreboard
+   face for headlines and figures, an italic serif accent, tabular numbers because every price gets compared down
+   a column. Borders only, 6px controls, 14px panels, pill buttons. Data colour stays in the family: brass means
+   the price firmed or views rose, pale sage means it softened; never red or green signals. */
 :root{
   --font-ui:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;
   --font-head:"DIN Condensed","Barlow Condensed","Oswald","Arial Narrow",sans-serif;
   --font-serif:Georgia,"Times New Roman",serif;
-  --navy:#07101f; --deck:#0b1629; --deck-up:#112039; --pit:#050b16;
-  --line:rgb(255 255 255 / .08); --line-strong:rgb(255 255 255 / .16);
-  --ink-1:#f4f6fa; --ink-2:#c6ccd8; --ink-3:#8b95a8; --ink-4:#6b7588;
-  --blue:#2f7bff; --blue-ink:#5c97ff; --blue-deep:#1a4fb8; --blue-glow:rgb(47 123 255 / .18);
-  --pale:#c9d1de;
+  --ground:#0b1a14; --deck:#11251c; --deck-up:#173126; --pit:#07120d;
+  --line:rgb(243 236 217 / .08); --line-strong:rgb(243 236 217 / .16);
+  --ink-1:#f3ecd9; --ink-2:#d6cdb5; --ink-3:#a39a82; --ink-4:#857e69;
+  --accent:#c9a24a; --accent-ink:#dbb865; --accent-deep:#a8842f; --accent-glow:rgb(201 162 74 / .13);
+  --on-accent:#0b1a14;
+  --pale:#a9bfae;
   --r-control:6px; --r-panel:14px; --r-pill:999px;
   --ease-out:cubic-bezier(.23,1,.32,1);
   --wrap:1240px;
@@ -31,26 +32,26 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{margin:0;background:var(--navy);color:var(--ink-1);font:16px/1.55 var(--font-ui);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+body{margin:0;background:var(--ground);color:var(--ink-1);font:16px/1.55 var(--font-ui);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
 a{color:inherit}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
-::selection{background:var(--blue);color:#fff}
+::selection{background:var(--accent);color:var(--on-accent)}
 [hidden]{display:none!important}
-:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 .muted{color:var(--ink-3)} .dim{color:var(--ink-4)}
 .fig{font-family:var(--font-head);font-weight:700;letter-spacing:.01em;font-variant-numeric:tabular-nums}
 
 .glow{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
-.glow::before{content:"";position:absolute;width:1100px;height:700px;left:50%;top:-360px;transform:translateX(-30%);background:radial-gradient(closest-side,var(--blue-glow),transparent 70%)}
+.glow::before{content:"";position:absolute;width:1100px;height:700px;left:50%;top:-360px;transform:translateX(-30%);background:radial-gradient(closest-side,var(--accent-glow),transparent 70%)}
 .glow::after{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 44px;mask-image:linear-gradient(180deg,rgb(0 0 0/.55),transparent 70%);-webkit-mask-image:linear-gradient(180deg,rgb(0 0 0/.55),transparent 70%)}
 
 /* nav */
 .mark{display:inline-flex;flex-direction:column;gap:4px;text-decoration:none;line-height:1}
 .mark span{display:flex;align-items:baseline}
 .mark b{font:700 22px/1 var(--font-head);letter-spacing:.06em;color:var(--ink-1)}
-.mark i{font:italic 400 16px/1 var(--font-serif);color:var(--blue);margin-left:6px}
-.mark::after{content:"";height:2px;background:var(--blue);border-radius:2px}
-.nav{position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--navy) 86%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.mark i{font:italic 400 16px/1 var(--font-serif);color:var(--accent);margin-left:6px}
+.mark::after{content:"";height:2px;background:var(--accent);border-radius:2px}
+.nav{position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--ground) 86%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .nav .wrap{height:60px;display:flex;align-items:center;gap:24px}
 .nav nav{margin-left:auto;display:flex;align-items:center;gap:22px}
 .nav nav a:not(.btn){font:500 14px/1 var(--font-ui);color:var(--ink-3);text-decoration:none;transition:color .15s}
@@ -58,33 +59,33 @@ a{color:inherit}
 @media (max-width:760px){.nav nav a:not(.btn){display:none}}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:var(--r-pill);font:600 14px/1 var(--font-ui);text-decoration:none;white-space:nowrap;border:0;cursor:pointer;color:var(--ink-1);background:none;transition:background .15s,border-color .15s,transform .15s var(--ease-out)}
 .btn:active{transform:scale(.97)}
-.btn-blue{background:var(--blue);color:#fff}
-.btn-blue:hover{background:var(--blue-deep)}
+.btn-accent{background:var(--accent);color:var(--on-accent)}
+.btn-accent:hover{background:var(--accent-deep)}
 .btn-ghost{border:1px solid var(--line-strong)}
 .btn-ghost:hover{border-color:var(--ink-3);background:var(--deck)}
 .btn-sm{padding:7px 12px;font-size:12.5px}
 .nav .btn{padding:9px 15px;font-size:13px}
 
 /* type */
-.kicker{font:700 14px/1 var(--font-head);letter-spacing:.12em;color:var(--blue-ink);text-transform:uppercase}
+.kicker{font:700 14px/1 var(--font-head);letter-spacing:.12em;color:var(--accent-ink);text-transform:uppercase}
 h1,h2,h3{font-family:var(--font-head);font-weight:700;letter-spacing:.01em;margin:0;line-height:.95}
 .h-display{font-size:clamp(52px,8.5vw,104px);text-transform:uppercase}
-.h-display em{display:block;font:italic 400 .58em/1.08 var(--font-serif);color:var(--blue);text-transform:none;letter-spacing:0;margin-top:.04em}
+.h-display em{display:block;font:italic 400 .58em/1.08 var(--font-serif);color:var(--accent);text-transform:none;letter-spacing:0;margin-top:.04em}
 .h-section{font-size:clamp(38px,5vw,58px);text-transform:uppercase}
 .lede{color:var(--ink-2);font-size:clamp(17px,1.6vw,19px);max-width:640px;margin:20px 0 0}
 section{position:relative;padding:84px 0 0;scroll-margin-top:60px}
 .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:24px}
 .sec-head p{margin:12px 0 0;color:var(--ink-3);max-width:600px}
 .sec-head .finding{color:var(--ink-1);font-size:18px}
-.sec-head .finding b{color:var(--blue-ink);font-weight:600}
-.rule{height:2px;background:var(--blue);width:56px;margin:0 0 18px;border-radius:2px}
+.sec-head .finding b{color:var(--accent-ink);font-weight:600}
+.rule{height:2px;background:var(--accent);width:56px;margin:0 0 18px;border-radius:2px}
 .panel{background:var(--deck);border:1px solid var(--line);border-radius:var(--r-panel)}
 
 /* hero */
 .hero{position:relative;padding:64px 0 8px;overflow:hidden}
 .hero .wrap{position:relative;z-index:1}
 .search{display:flex;align-items:center;gap:10px;margin-top:30px;max-width:720px;background:var(--deck);border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:6px 6px 6px 20px;transition:border-color .15s}
-.search:focus-within{border-color:var(--blue)}
+.search:focus-within{border-color:var(--accent)}
 .search svg{flex:none;color:var(--ink-3)}
 .search input{flex:1;min-width:0;background:none;border:0;color:var(--ink-1);font:500 17px/1 var(--font-ui);padding:10px 0;outline:0}
 .search input::placeholder{color:var(--ink-4)}
@@ -93,12 +94,12 @@ section{position:relative;padding:84px 0 0;scroll-margin-top:60px}
 .ticker div b{display:block;font:700 40px/1 var(--font-head);color:var(--ink-1)}
 .ticker div b small{font-size:.5em;color:var(--ink-3);margin-left:2px}
 .ticker div span{font-size:13px;color:var(--ink-3)}
-.ticker .up{color:var(--blue-ink)}
+.ticker .up{color:var(--accent-ink)}
 
 /* chips */
 .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--line-strong);border-radius:var(--r-pill);font:500 13px/1 var(--font-ui);color:var(--ink-2);background:none;cursor:pointer;white-space:nowrap;text-decoration:none;transition:border-color .15s,color .15s,background .15s}
 .chip:hover{border-color:var(--ink-3);color:var(--ink-1)}
-.chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .chip .n{font:700 13px/1 var(--font-head);opacity:.75}
 .seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:3px;gap:2px}
 .seg button{background:none;border:0;color:var(--ink-3);font:600 12.5px/1 var(--font-ui);padding:7px 12px;border-radius:var(--r-pill);cursor:pointer}
@@ -113,7 +114,7 @@ section{position:relative;padding:84px 0 0;scroll-margin-top:60px}
 .heat .lab .n{color:var(--ink-4);font:700 13px/1 var(--font-head)}
 .heat .lab.carrow{padding-left:17px;font-size:12.5px;color:var(--ink-3);cursor:default}
 .heat .now{font:700 17px/1 var(--font-head);text-align:right}
-.heat .now.up{color:var(--blue-ink)} .heat .now.down{color:var(--pale)}
+.heat .now.up{color:var(--accent-ink)} .heat .now.down{color:var(--pale)}
 .cells{display:grid;gap:2px;height:22px}
 .heat .carrow + .cells{height:13px}
 .cells i{display:block;border-radius:3px;min-width:0;background:var(--pit);box-shadow:inset 0 0 0 1px var(--line)}
@@ -123,8 +124,8 @@ section{position:relative;padding:84px 0 0;scroll-margin-top:60px}
 .axis span{border-left:1px solid var(--line-strong);padding-left:4px;white-space:nowrap}
 .legend{display:flex;align-items:center;gap:10px;margin-top:16px;font-size:12.5px;color:var(--ink-3);flex-wrap:wrap}
 .ramp{width:150px;height:8px;border-radius:4px}
-.ramp.p{background:linear-gradient(90deg,var(--pale),var(--deck-up),var(--blue))}
-.ramp.v{background:linear-gradient(90deg,var(--pit),var(--blue))}
+.ramp.p{background:linear-gradient(90deg,var(--pale),var(--deck-up),var(--accent))}
+.ramp.v{background:linear-gradient(90deg,var(--pit),var(--accent))}
 .spk{display:inline-block;width:10px;height:10px;border-radius:3px;box-shadow:inset 0 0 0 2px var(--ink-1);vertical-align:-1px}
 .note{border:1px dashed var(--line-strong);border-radius:10px;padding:10px 14px;font-size:13.5px;color:var(--ink-3);margin-bottom:16px}
 #tip{position:fixed;pointer-events:none;z-index:60;background:var(--deck-up);border:1px solid var(--line-strong);border-radius:8px;padding:7px 11px;font-size:12.5px;box-shadow:0 12px 30px rgb(0 0 0/.5);max-width:300px}
@@ -134,14 +135,14 @@ section{position:relative;padding:84px 0 0;scroll-margin-top:60px}
 .model{padding:20px;display:grid;gap:14px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:border-color .2s,background .2s,transform .3s var(--ease-out)}
 .model:hover{border-color:var(--line-strong);background:var(--deck-up)}
 @media (hover:hover){.model:hover{transform:translateY(-3px)}}
-.model.on{border-color:var(--blue)}
+.model.on{border-color:var(--accent)}
 .model h3{font-size:26px;text-transform:uppercase}
 .model .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .model .live{font:700 38px/.9 var(--font-head);text-align:right}
 .model .live small{display:block;font:500 11px/1.4 var(--font-ui);color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase}
 .strip{position:relative;height:30px;margin:4px 6px 0}
 .strip::before{content:"";position:absolute;left:0;right:0;top:14px;height:2px;background:var(--line-strong);border-radius:2px}
-.strip i{position:absolute;top:9px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--blue);border:2px solid var(--deck)}
+.strip i{position:absolute;top:9px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--accent);border:2px solid var(--deck)}
 .strip i.r{background:var(--pale)}
 .strip .med{position:absolute;top:4px;width:2px;height:22px;background:var(--ink-1);margin-left:-1px;border-radius:1px}
 .range{display:flex;justify-content:space-between;font:700 16px/1 var(--font-head);color:var(--ink-2)}
@@ -149,9 +150,9 @@ section{position:relative;padding:84px 0 0;scroll-margin-top:60px}
 .mstats div b{display:block;font:700 20px/1 var(--font-head)}
 .mstats div span{font-size:11.5px;color:var(--ink-3)}
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:var(--r-pill);font:700 12px/1.2 var(--font-head);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line-strong);color:var(--ink-2);white-space:nowrap}
-.badge.alert{background:var(--blue);border-color:var(--blue);color:#fff}
-.badge.reserved{border-color:var(--blue-ink);color:var(--blue-ink)}
-.badge.sold{background:var(--pale);border-color:var(--pale);color:var(--navy)}
+.badge.alert{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.badge.reserved{border-color:var(--accent-ink);color:var(--accent-ink)}
+.badge.sold{background:var(--pale);border-color:var(--pale);color:var(--on-accent)}
 .badge.gone{color:var(--ink-4)}
 .halo{margin-top:16px;font-size:14px;color:var(--ink-3)}
 .halo b{font:700 18px/1 var(--font-head);color:var(--ink-1)}
@@ -160,18 +161,18 @@ section{position:relative;padding:84px 0 0;scroll-margin-top:60px}
 .groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .group{padding:20px;display:grid;gap:12px;cursor:pointer;transition:border-color .2s,background .2s}
 .group:hover{border-color:var(--line-strong);background:var(--deck-up)}
-.group.on{border-color:var(--blue)}
+.group.on{border-color:var(--accent)}
 .group h3{font-size:24px;text-transform:uppercase}
 .group .desc{font-size:13.5px;color:var(--ink-3);margin-top:6px}
 .group svg{width:100%;height:38px;display:block}
 .group .foot{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-4)}
 
 /* finder */
-.finder{position:sticky;top:60px;z-index:20;background:color-mix(in srgb,var(--navy) 92%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);margin:0 -20px;padding:14px 20px}
+.finder{position:sticky;top:60px;z-index:20;background:color-mix(in srgb,var(--ground) 92%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);margin:0 -20px;padding:14px 20px}
 .frow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .frow + .frow{margin-top:10px}
 .field{display:flex;align-items:center;gap:6px;background:var(--deck);border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:0 12px;height:38px}
-.field:focus-within{border-color:var(--blue)}
+.field:focus-within{border-color:var(--accent)}
 .field label{font:700 12px/1 var(--font-head);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .field input,.field select{background:none;border:0;color:var(--ink-1);font:500 14px/1 var(--font-ui);outline:0;min-width:0}
 .field input{width:84px}
@@ -180,7 +181,7 @@ section{position:relative;padding:84px 0 0;scroll-margin-top:60px}
 .field select{appearance:none;padding-right:14px;background:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%) right 4px center/5px 5px no-repeat,linear-gradient(-45deg,transparent 50%,var(--ink-3) 50%) right 0 center/5px 5px no-repeat}
 .field select option{background:var(--deck);color:var(--ink-1)}
 .count{font:700 18px/1 var(--font-head);color:var(--ink-2);margin-left:auto;white-space:nowrap}
-.linkbtn{background:none;border:0;color:var(--blue-ink);font:500 13px/1 var(--font-ui);cursor:pointer;padding:4px}
+.linkbtn{background:none;border:0;color:var(--accent-ink);font:500 13px/1 var(--font-ui);cursor:pointer;padding:4px}
 
 /* car cards */
 .cars{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:22px}
@@ -190,19 +191,19 @@ section{position:relative;padding:84px 0 0;scroll-margin-top:60px}
 .car .kicker{font-size:12.5px}
 .car h3{font:700 23px/1.05 var(--font-head);letter-spacing:.01em}
 .car h3 a{text-decoration:none}
-.car h3 a:hover{color:var(--blue-ink)}
+.car h3 a:hover{color:var(--accent-ink)}
 .car .meta{font-size:13.5px;color:var(--ink-3)}
 .car .price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .car .price b{font:700 36px/1 var(--font-head)}
 .mv{font:700 15px/1 var(--font-head);letter-spacing:.02em}
-.mv.up{color:var(--blue-ink)} .mv.down{color:var(--pale)}
+.mv.up{color:var(--accent-ink)} .mv.down{color:var(--pale)}
 .car .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid var(--line);padding-top:10px}
 .car .stats b{display:block;font:700 19px/1 var(--font-head)}
 .car .stats span{font-size:11.5px;color:var(--ink-3)}
 .car .notes{font-size:13px;color:var(--ink-3);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:0}
 .car .tags{display:flex;gap:6px;flex-wrap:wrap}
 .tag{font-size:11.5px;color:var(--ink-2);border:1px solid var(--line);border-radius:var(--r-pill);padding:2px 8px;cursor:pointer;background:none;font-family:inherit}
-.tag:hover{border-color:var(--blue);color:var(--ink-1)}
+.tag:hover{border-color:var(--accent);color:var(--ink-1)}
 .car .acts{display:flex;gap:8px;margin-top:auto;padding-top:4px}
 .car svg.sl{width:100%;height:26px;display:block}
 
@@ -214,14 +215,14 @@ th.r,td.r{text-align:right}
 td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
 td .sub{display:block;font-size:12px;color:var(--ink-4)}
 td a{text-decoration:none;font-weight:550}
-td a:hover{color:var(--blue-ink)}
+td a:hover{color:var(--accent-ink)}
 td.f{font:700 17px/1 var(--font-head)}
 tbody tr:hover td{background:var(--deck)}
 .empty{padding:40px;text-align:center;color:var(--ink-3)}
 
 /* dialog */
 dialog{border:1px solid var(--line-strong);border-radius:var(--r-panel);background:var(--deck);color:var(--ink-1);padding:0;width:min(580px,94vw);max-height:92vh}
-dialog::backdrop{background:rgb(2 6 14/.7);backdrop-filter:blur(3px)}
+dialog::backdrop{background:rgb(3 10 7/.72);backdrop-filter:blur(3px)}
 dialog form{padding:24px;display:grid;gap:14px}
 dialog h3{font-size:34px;text-transform:uppercase}
 dialog p{margin:0;color:var(--ink-3);font-size:14px}
@@ -229,16 +230,16 @@ dialog p{margin:0;color:var(--ink-3);font-size:14px}
 .f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .fl{display:grid;gap:5px;font:700 12px/1 var(--font-head);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .fl input,.fl select,.fl textarea{font:400 15px/1.3 var(--font-ui);color:var(--ink-1);background:var(--pit);border:1px solid var(--line-strong);border-radius:var(--r-control);padding:10px 12px;width:100%;text-transform:none;letter-spacing:0}
-.fl input:focus,.fl select:focus,.fl textarea:focus{outline:0;border-color:var(--blue)}
+.fl input:focus,.fl select:focus,.fl textarea:focus{outline:0;border-color:var(--accent)}
 .picks{display:flex;flex-wrap:wrap;gap:6px}
 .picks label{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:5px 11px;font:500 13px/1 var(--font-ui);color:var(--ink-2);cursor:pointer;text-transform:none;letter-spacing:0}
-.picks label:has(input:checked){background:var(--blue);border-color:var(--blue);color:#fff}
+.picks label:has(input:checked){background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .picks input{display:none}
 .carpick{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:6px;display:grid;gap:1px}
 .carpick .sec{font:700 12px/1 var(--font-head);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4);padding:10px 8px 4px}
 .carpick label{display:flex;gap:10px;align-items:center;padding:6px 8px;border-radius:6px;font-size:13.5px;color:var(--ink-2);cursor:pointer}
 .carpick label:hover{background:var(--deck-up)}
-.carpick input{accent-color:var(--blue)}
+.carpick input{accent-color:var(--accent)}
 .carpick .p{margin-left:auto;font:700 14px/1 var(--font-head);color:var(--ink-3)}
 .acts2{display:flex;gap:10px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
 .acts2 .sp{flex:1}
@@ -255,7 +256,7 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
   <a class="mark" href="#top" aria-label="Gated home"><span><b>GATED</b><i>by the numbers</i></span></a>
   <nav>
     <a href="#heat">Heat</a><a href="#models">Models</a><a href="#groups">Groups</a><a href="#cars">Cars</a>
-    <button class="btn btn-blue" type="button" data-act="add">+ Add a car</button>
+    <button class="btn btn-accent" type="button" data-act="add">+ Add a car</button>
   </nav>
 </div></header>
 
@@ -264,11 +265,11 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
   <div class="wrap">
     <div class="kicker" id="asof">UK market · loading</div>
     <h1 class="h-display" style="margin-top:14px">Analogue supercars<em>tracked from the live adverts</em></h1>
-    <p class="lede">Scuderias, gated manuals, 675LTs, GT3s and V10s for sale in the UK. Every car links to its advert; asking prices and view counts are logged by the crew, day by day, and nothing is estimated.</p>
+    <p class="lede">Scuderias, gated manuals, 675LTs, GT3s and V10s for sale in the UK. Every car links to its advert. Each morning a check reads the asking price and view count off every listing, the crew add the rest, and nothing is estimated.</p>
     <form class="search" id="heroSearch" role="search">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="heroQ" type="search" placeholder="Search: 16M, Club Sport, G6 engine, Gulf, Romans…" aria-label="Search cars" autocomplete="off">
-      <button class="btn btn-blue" type="submit">Find cars</button>
+      <button class="btn btn-accent" type="submit">Find cars</button>
     </form>
     <div class="quick" id="quick"></div>
     <div class="ticker" id="ticker"></div>
@@ -292,7 +293,7 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
 
 <section id="models"><div class="wrap">
   <div class="sec-head">
-    <div><div class="rule"></div><h2 class="h-section">The models</h2><p>Each dot is a live car on that model's asking-price range; the white tick is the median. Tap a model to see its cars.</p></div>
+    <div><div class="rule"></div><h2 class="h-section">The models</h2><p>Each dot is a live car on that model's asking-price range; the cream tick is the median. Tap a model to see its cars.</p></div>
   </div>
   <div class="models" id="modelGrid"></div>
   <div class="halo" id="halo"></div>
@@ -349,7 +350,7 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
   <div class="fl">Groups<div class="picks" id="addGroups"></div></div>
   <label class="fl">Notes<textarea name="notes" rows="2" placeholder="Spec, history, anything to check"></textarea></label>
   <div class="err" id="addErr"></div>
-  <div class="acts2"><span class="sp"></span><button class="btn btn-ghost" value="cancel" formnovalidate>Cancel</button><button class="btn btn-blue" value="ok">Continue on GitHub</button></div>
+  <div class="acts2"><span class="sp"></span><button class="btn btn-ghost" value="cancel" formnovalidate>Cancel</button><button class="btn btn-accent" value="ok">Continue on GitHub</button></div>
 </form></dialog>
 
 <dialog id="dLog"><form method="dialog" id="fLog">
@@ -359,7 +360,7 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
     <label class="fl">Status<select name="status"><option>No change</option><option>live</option><option>reserved</option><option>sold</option><option>gone</option></select></label></div>
   <label class="fl">Note<input name="note" maxlength="300"></label>
   <div class="hist" id="logHist"></div>
-  <div class="acts2"><span class="sp"></span><button class="btn btn-ghost" value="cancel" formnovalidate>Close</button><button class="btn btn-blue" value="ok">Continue on GitHub</button></div>
+  <div class="acts2"><span class="sp"></span><button class="btn btn-ghost" value="cancel" formnovalidate>Close</button><button class="btn btn-accent" value="ok">Continue on GitHub</button></div>
 </form></dialog>
 
 <dialog id="dGroup"><form method="dialog" id="fGroup">
@@ -367,7 +368,7 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
   <label class="fl">Group name<input name="name" required maxlength="60" placeholder="Cars we'd actually buy"></label>
   <label class="fl">What links them<input name="description" maxlength="300"></label>
   <div class="fl">Cars<div class="carpick" id="grpCars"></div></div>
-  <div class="acts2"><span class="sp"></span><button class="btn btn-ghost" value="cancel" formnovalidate>Cancel</button><button class="btn btn-blue" value="ok">Continue on GitHub</button></div>
+  <div class="acts2"><span class="sp"></span><button class="btn btn-ghost" value="cancel" formnovalidate>Cancel</button><button class="btn btn-accent" value="ok">Continue on GitHub</button></div>
 </form></dialog>
 
 <script>
@@ -404,16 +405,71 @@ function enrich(c){
   c.vpd=mean(Object.entries(c.vDay).sort().slice(-7).map(e=>e[1]));
   c.firstSeen=sn[0]?.day||c.added_at.slice(0,10);
   c.age=diffDays(c.listed_at?c.listed_at.slice(0,10):c.firstSeen,S.today);
-  const since=dayStr(new Date(at(S.today)-NDAYS*DAY));
-  const base=P.filter(s=>s.day<since).at(-1)||P.find(s=>s.day>=since);
-  const move=base&&c.price?c.price/base.price-1:0;
-  const rose=Object.entries(c.pDay).some(([d,v])=>d>=since&&v>0);
-  const took=sn.some(s=>s.day>=since&&(s.status==="reserved"||s.status==="sold"))||c.status==="reserved"||c.status==="sold";
-  c.verdict=(took||rose)?"W":(move<-.03||(c.age>60&&Math.abs(move)<.001))?"L":"D";
+  c.listedKnown=!!c.listed_at;
+  // where this car's asking price has been, and how it moved over the last week and month
+  c.P=P; c.lo=P.length?Math.min(...P.map(s=>s.price)):null; c.hi=P.length?Math.max(...P.map(s=>s.price)):null;
+  c.asOf=d=>{let p=null;for(const s of P){if(s.day<=d)p=s.price;else break}return p};
+  const ago=n=>c.asOf(dayStr(new Date(at(S.today)-n*DAY)))??c.firstPrice;
+  c.chg7=c.price&&ago(7)?c.price/ago(7)-1:null; c.chg30=c.price&&ago(30)?c.price/ago(30)-1:null;
+  c.goneOn=sn.find(s=>s.status==="sold"||s.status==="gone")?.day||null;
+  c.cut30=Object.entries(c.pDay).some(([d,v])=>v<0&&diffDays(d,S.today)<=30);
   c.hay=[c.name,c.sector,c.seller,c.location,c.notes,c.year,c.status,...c.groups.map(gName)].join(" ").toLowerCase();
   return c;
 }
 const gName=id=>S.groups.find(g=>g.id===id)?.name||"";
+const liveOn=(c,d)=>c.firstSeen<=d&&(!c.goneOn||c.goneOn>d);
+
+/* Market maths for a set of cars.
+   Index: chain-linked repeat-car price index, so a cheap car arriving or a dear one selling doesn't read as a
+   market move. Each day's step is the average log change of cars priced on both days.
+   Band: floor, median and ceiling of the asks live on each day (where prices have been).
+   Projection: the index's recent trend carried 30 days forward, with a band from its day-to-day noise.
+   It's a trend read, not a valuation; it needs 7 days of checks before it's shown. */
+function stats(cars){
+  const D=days(), first=cars.map(c=>c.firstSeen).sort()[0]||S.today;
+  const idx=[], band=[]; let lnI=0, prev=null;
+  for(const d of D){
+    if(d<first){idx.push(null);band.push(null);continue}
+    const L=cars.filter(c=>liveOn(c,d)&&c.asOf(d)!=null), pr=L.map(c=>c.asOf(d));
+    band.push(pr.length?{lo:Math.min(...pr),md:median(pr),hi:Math.max(...pr),n:pr.length}:null);
+    if(prev){const r=cars.map(c=>{const a=c.asOf(prev),b=c.asOf(d);return a&&b&&liveOn(c,d)?Math.log(b/a):null}).filter(x=>x!=null);if(r.length)lnI+=mean(r)}
+    idx.push(lnI);prev=d;
+  }
+  const n=idx.filter(x=>x!=null).length, last=idx.at(-1)??0;
+  const back=k=>{const i=Math.max(idx.findIndex(x=>x!=null),idx.length-1-k);return idx[i]??0};
+  const B=band.filter(Boolean);
+  const out={idx,band,n,chg7:n>1?Math.exp(last-back(7))-1:null,chg30:n>1?Math.exp(last-back(30))-1:null,
+    lo30:B.length?Math.min(...B.map(b=>b.lo)):null,hi30:B.length?Math.max(...B.map(b=>b.hi)):null,proj:null};
+  if(n>=7){
+    const pts=idx.map((y,i)=>y==null?null:[i,y]).filter(Boolean);
+    const mx=mean(pts.map(p=>p[0])),my=mean(pts.map(p=>p[1]));
+    const sxx=pts.reduce((a,p)=>a+(p[0]-mx)**2,0),b=pts.reduce((a,p)=>a+(p[0]-mx)*(p[1]-my),0)/sxx;
+    const res=pts.map(p=>p[1]-(my+b*(p[0]-mx))), s=Math.sqrt(res.reduce((a,r)=>a+r*r,0)/Math.max(1,pts.length-2));
+    const steps=pts.slice(1).map((p,i)=>p[1]-pts[i][1]), sd=Math.sqrt(mean(steps.map(x=>x*x))||0);
+    const w=1.64*(sd*Math.sqrt(30)+s/Math.sqrt(sxx)*30);
+    out.proj={mid:Math.exp(30*b)-1,lo:Math.exp(30*b-w)-1,hi:Math.exp(30*b+w)-1,conf:n<14?"Low":n<30?"Medium":"Good"};
+  }
+  const L=cars.filter(live), wkAgo=dayStr(new Date(at(S.today)-7*DAY));
+  out.live=L.length; out.liveWk=cars.filter(c=>liveOn(c,wkAgo)).length;
+  out.cutShare=L.length?L.filter(c=>c.cut30).length/L.length:0;
+  out.ageMed=median(L.filter(c=>c.listedKnown).map(c=>c.age));
+  out.vpd=L.reduce((a,c)=>a+(c.vpd||0),0);
+  out.median=median(L.map(c=>c.price));
+  return out;
+}
+/* Cut risk for one car, from what the advert tells us: priced well above its model's median, listed a long
+   time, fewer views than its peers, or already cut once this month. A pointer for what to watch, not a forecast. */
+function cutRisk(c,st){
+  if(!live(c)||c.price==null)return null;
+  const why=[];
+  if(st.median&&c.price>=st.median*1.1)why.push(`${pct(c.price/st.median-1,0)} above the model median`);
+  if(c.listedKnown&&c.age>60)why.push(`listed ${c.age} days`);
+  const peers=S.cars.filter(x=>x.sector===c.sector&&live(x)&&x.vpd!=null).map(x=>x.vpd);
+  if(c.vpd!=null&&peers.length>2&&c.vpd<median(peers)*.6)why.push("views lag its peers");
+  if(c.cut30)why.push("already cut this month");
+  const lvl=why.length>=3||(c.listedKnown&&c.age>120&&why.length>=2)?"High":why.length===2?"Medium":"Low";
+  return {lvl,why};
+}
 function rows(by){
   if(by==="group")return S.groups.map(g=>({key:"g"+g.id,label:g.name,cars:S.cars.filter(c=>c.groups.includes(g.id))}));
   return S.sectors.map(s=>({key:"s"+s,label:s,cars:S.cars.filter(c=>c.sector===s)})).filter(r=>r.cars.length);
@@ -421,8 +477,8 @@ function rows(by){
 
 /* ---------- colour (family only: blue = firmer/more, pale = softer) ---------- */
 const mix=(a,b,t)=>`color-mix(in oklab, var(${b}) ${Math.round(t*100)}%, var(${a}))`;
-function pCol(v){if(v==null)return null;if(Math.abs(v)<.0005)return "var(--deck-up)";return mix("--deck-up",v>0?"--blue":"--pale",Math.min(1,.3+Math.abs(v)/.05*.7))}
-let vMax=5;const vCol=v=>v==null?null:mix("--pit","--blue",Math.min(1,.12+.88*Math.sqrt(v/vMax)));
+function pCol(v){if(v==null)return null;if(Math.abs(v)<.0005)return "var(--deck-up)";return mix("--deck-up",v>0?"--accent":"--pale",Math.min(1,.3+Math.abs(v)/.05*.7))}
+let vMax=5;const vCol=v=>v==null?null:mix("--pit","--accent",Math.min(1,.12+.88*Math.sqrt(v/vMax)));
 
 /* ---------- hero ---------- */
 function renderHero(){
@@ -494,7 +550,7 @@ function renderModels(){
       <div class="top"><div><div class="kicker" style="font-size:12px">${L.length<=3?'<span class="badge alert">Supply ≤3</span>':"&nbsp;"}</div><h3 style="margin-top:8px">${h(r.label)}</h3></div><div class="live">${L.length}<small>live</small></div></div>
       ${pr.length?`<div><div class="strip">${L.filter(c=>c.price!=null).map(c=>`<i class="${c.status==="reserved"?"r":""}" style="left:${pos(c.price)}%" title="${h(c.name)} · ${gbp(c.price)}"></i>`).join("")}<span class="med" style="left:${pos(md)}%"></span></div>
       <div class="range"><span>${gbpk(lo)}</span><span class="muted" style="font-size:13px">median ${gbpk(md)}</span><span>${gbpk(hi)}</span></div></div>`:`<div class="muted" style="font-size:14px">No live car with a price.</div>`}
-      <div class="mstats"><div><b class="${m?m>0?"up":"":""}" style="${m>0?"color:var(--blue-ink)":m<0?"color:var(--pale)":""}">${pct(m)}</b><span>avg move</span></div><div><b>${w}–${l}–${d}</b><span>W–L–D, 30 days</span></div><div><b>${r.cars.reduce((x,c)=>x+(c.vpd||0),0)?Math.round(r.cars.reduce((x,c)=>x+(c.vpd||0),0)):"–"}</b><span>views/day</span></div></div>
+      <div class="mstats"><div><b class="${m?m>0?"up":"":""}" style="${m>0?"color:var(--accent-ink)":m<0?"color:var(--pale)":""}">${pct(m)}</b><span>avg move</span></div><div><b>${w}–${l}–${d}</b><span>W–L–D, 30 days</span></div><div><b>${r.cars.reduce((x,c)=>x+(c.vpd||0),0)?Math.round(r.cars.reduce((x,c)=>x+(c.vpd||0),0)):"–"}</b><span>views/day</span></div></div>
     </button>`}).join("");
   const med=s=>median(S.cars.filter(c=>c.sector===s&&live(c)).map(c=>c.price));
   const pairs=[["Porsche 997.2 GT3 / RS","Porsche 991.1 GT3","997.2 GT3 RS to 991.1 GT3"],["Porsche 997.1 GT3 / RS","Porsche 991.1 GT3","997.1 to 991.1 GT3"],["Ferrari 430 Scuderia / 16M","Ferrari F430 manual","Scuderia/16M to F430 manual"]];
@@ -509,14 +565,14 @@ function spark(cars,cls=""){
   if(v.length<2||new Set(v).size<2)return `<svg class="${cls}" viewBox="0 0 100 34" preserveAspectRatio="none"><line x1="0" y1="17" x2="100" y2="17" stroke="var(--line-strong)" stroke-dasharray="2 3" vector-effect="non-scaling-stroke"/></svg>`;
   const lo=Math.min(...v),hi=Math.max(...v),rg=hi-lo||1;
   const p=pts.map((x,i)=>x==null?null:`${(i/(NDAYS-1)*100).toFixed(1)},${(31-((x-lo)/rg)*28).toFixed(1)}`).filter(Boolean);
-  return `<svg class="${cls}" viewBox="0 0 100 34" preserveAspectRatio="none"><polyline points="${p.join(" ")}" fill="none" stroke="${v.at(-1)>=v[0]?"var(--blue)":"var(--pale)"}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
+  return `<svg class="${cls}" viewBox="0 0 100 34" preserveAspectRatio="none"><polyline points="${p.join(" ")}" fill="none" stroke="${v.at(-1)>=v[0]?"var(--accent)":"var(--pale)"}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
 }
 function renderGroups(){
   $("#groupGrid").innerHTML=S.groups.map(g=>{
     const cars=S.cars.filter(c=>c.groups.includes(g.id)), L=cars.filter(live), pr=L.map(c=>c.price).filter(x=>x!=null), m=mean(cars.map(c=>c.chg));
     return `<div class="panel group ${F.g==g.id?"on":""}" data-qg="${g.id}" role="button" tabindex="0">
       <div><h3>${h(g.name)}</h3><div class="desc">${h(g.description||"")}</div></div>
-      <div class="mstats" style="border:0;padding:0;grid-template-columns:repeat(4,1fr)"><div><b>${L.length}</b><span>live</span></div><div><b>${gbpk(pr.length?Math.min(...pr):null)}</b><span>floor</span></div><div><b>${gbpk(pr.length?Math.max(...pr):null)}</b><span>ceiling</span></div><div><b style="${m>0?"color:var(--blue-ink)":m<0?"color:var(--pale)":""}">${pct(m)}</b><span>move</span></div></div>
+      <div class="mstats" style="border:0;padding:0;grid-template-columns:repeat(4,1fr)"><div><b>${L.length}</b><span>live</span></div><div><b>${gbpk(pr.length?Math.min(...pr):null)}</b><span>floor</span></div><div><b>${gbpk(pr.length?Math.max(...pr):null)}</b><span>ceiling</span></div><div><b style="${m>0?"color:var(--accent-ink)":m<0?"color:var(--pale)":""}">${pct(m)}</b><span>move</span></div></div>
       ${spark(cars)}
       <div class="foot"><span>by ${h(g.created_by||"?")}</span><button class="btn btn-ghost btn-sm" type="button" data-editg="${g.id}">Edit cars</button></div></div>`}).join("")||`<div class="muted">No groups yet.</div>`;
 }
@@ -646,7 +702,7 @@ fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(d=>{
   $("#fGroup").innerHTML=`<option value="">All</option>`+S.groups.map(g=>`<option value="${g.id}">${h(g.name)}</option>`).join("");
   const deep=readHash();syncInputs();
   renderHero();renderHeat();renderModels();renderGroups();renderCars();
-  $("#foot").textContent=`Gated · ${S.cars.length} cars tracked · prices and views from the live adverts, logged by the crew. A blank means nobody has recorded it yet.`;
+  $("#foot").textContent=`Gated · ${S.cars.length} cars tracked · prices and views read from the live adverts each morning at 6:30 and logged by the crew. A blank means the advert does not show it.`;
   if(deep)$("#cars").scrollIntoView();
 }).catch(()=>{$("#results").innerHTML=`<div class="empty">Couldn't load the data. Try again in a minute.</div>`});
 </script>

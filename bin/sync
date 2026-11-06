@@ -1,0 +1,9 @@
+#!/bin/bash
+# Every 15 minutes (launchd): apply crew requests from GitHub issues; republish only if something changed.
+set -uo pipefail
+cd "$(dirname "$0")/.."
+n=$(.venv/bin/python -m gated.ingest | awk '/^applied/{print $2}')
+if [[ "${n:-0}" -gt 0 ]]; then
+  echo "=== sync $(date '+%F %T'): $n applied"
+  ~/bin/ship . -m "Crew updates $(date '+%Y-%m-%d %H:%M')"
+fi
