@@ -193,6 +193,7 @@ svg.band{width:100%;display:block}
 .field select{appearance:none;padding-right:14px;background:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%) right 4px center/5px 5px no-repeat,linear-gradient(-45deg,transparent 50%,var(--ink-3) 50%) right 0 center/5px 5px no-repeat}
 .field select option{background:var(--deck);color:var(--ink-1)}
 .count{font:700 18px/1 var(--font-head);color:var(--ink-2);margin-left:auto;white-space:nowrap}
+.ftoggle{display:none}
 .linkbtn{background:none;border:0;color:var(--accent-ink);font:500 13px/1 var(--font-ui);cursor:pointer;padding:4px}
 
 /* car cards */
@@ -273,6 +274,17 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
 .mover .nm{font:700 19px/1.1 var(--font-head);letter-spacing:.01em}
 .mover .nm a{text-decoration:none}.mover .nm a:hover{color:var(--accent-ink)}
 .mover .sub2{font-size:13px;color:var(--ink-3)}
+/* price map: models down the side, price bands across, shade = how many cars sit in that band */
+.pmwrap{padding:18px 20px}
+.pm{display:grid;grid-template-columns:minmax(120px,210px) 1fr 64px;gap:4px 12px;align-items:center}
+.pm .lab{font-size:14px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.pm .lab .n{color:var(--ink-4);font:700 13px/1 var(--font-head);margin-left:4px}
+.pm .cells{height:24px}
+.pm .cells i{cursor:pointer;position:relative}
+.pm .cells i.md::after{content:"";position:absolute;inset:-2px;border:2px solid var(--ink-1);border-radius:4px}
+.pm .cells i.sel{box-shadow:0 0 0 2px var(--accent)}
+.pm .rng{font:700 14px/1 var(--font-head);text-align:right;color:var(--ink-2);white-space:nowrap}
+.pm .axis span{border-left:1px solid var(--line-strong);padding-left:3px}
 /* interactive sparklines: hover or tap to read the price on any day */
 .isp{position:relative;touch-action:pan-y;cursor:crosshair;-webkit-tap-highlight-color:transparent}
 .isp svg{width:100%;display:block;overflow:visible}
@@ -289,11 +301,38 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
 #tip .up{color:var(--accent-ink)} #tip .down{color:var(--pale)}
 td.trend{width:110px;min-width:90px}
 @media (max-width:760px){
-  #today{order:-1;padding-top:22px}
-  #today .h-section{font-size:38px}
-  .hero{padding-top:44px}
-  .hero .lede{display:none}
-  .movers{grid-template-columns:1fr}
+  /* phones: movers, then the price map, then search and the rest; everything a size down */
+  #today{order:-2;padding-top:18px} #pricemap{order:-1;padding-top:30px}
+  section{padding-top:44px}
+  .h-section{font-size:32px}
+  .sec-head{margin-bottom:14px;gap:10px} .sec-head p{margin-top:8px;font-size:14.5px} .sec-head .finding{font-size:15px}
+  .rule{margin-bottom:10px;width:40px}
+  .hero{padding:26px 0 0} .hero .glow,.hero h1,.hero .lede{display:none}
+  .search{margin-top:12px;padding:4px 4px 4px 14px} .search input{font-size:15px;padding:8px 0} .search .btn{padding:9px 14px}
+  .quick{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:10px -20px 0;padding:0 20px} .quick::-webkit-scrollbar{display:none}
+  .quick .chip{padding:5px 10px;font-size:12.5px}
+  .ticker{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 10px;margin-top:16px;padding-top:14px}
+  .ticker div b{font-size:22px} .ticker div span{font-size:11.5px;line-height:1.25;display:block}
+  .movers{grid-template-columns:1fr;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--deck)}
+  .mover{grid-template-columns:1fr auto;grid-template-areas:"what big" "nm big";gap:2px 12px;padding:10px 14px;border:0;border-radius:0;border-bottom:1px solid var(--line);background:none}
+  .mover:last-child{border-bottom:0}
+  .mover .row1{display:contents} .mover .what{grid-area:what;font-size:11px} .mover .big{grid-area:big;align-self:center;font-size:22px}
+  .mover .nm{grid-area:nm;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mover .sub2,.mover .isp{display:none}
+  .pm .axis span.alt{display:none} .ticker div:nth-child(7){display:none}
+  .pmwrap{padding:12px} .pm{grid-template-columns:104px 1fr 46px;gap:3px 8px} .pm .lab{font-size:12px} .pm .cells{height:20px} .pm .rng{font-size:12px}
+  .heatwrap{padding:12px}
+  .models{grid-template-columns:1fr 1fr;gap:10px} .model{padding:12px;gap:8px} .model h3{font-size:16px;margin-top:4px!important} .model .live{font-size:26px}
+  .model .k2,.model .k2+.isp,.model .k2~.range,.model .mstats div:nth-child(3){display:none} .model .mstats{grid-template-columns:1fr 1fr;padding-top:8px} .model .mstats b{font-size:16px} .model .range{font-size:12px}
+  .strip{height:22px;margin:0 4px} .strip::before{top:10px} .strip i{top:5px;width:10px;height:10px;margin-left:-5px} .strip .med{top:1px;height:20px}
+  .groups{gap:10px} .group{padding:14px;gap:8px} .group h3{font-size:19px} .group .desc,.group .isp{display:none}
+  .cars{gap:10px;margin-top:14px} .car{padding:12px 14px 10px;gap:6px} .car h3{font-size:19px} .car .price b{font-size:28px} .car .meta{font-size:12.5px}
+  .car .notes,.car .tags,.car .ptrack,.car .ptrack+.range,.car .stats{display:none}
+  .car .top .badge.risk-low{display:none} .car .isp{height:24px!important} .car .isp svg{height:24px!important} .car .stats{padding-top:6px} .car .stats b,.car .stats .fig,.car .stats .mv{font-size:16px}
+  .car .acts .btn{padding:6px 10px;font-size:12px}
+  .ftoggle{display:inline-flex;order:2} .finder.closed .frow+.frow,.finder.closed .frow:first-child .field:not(.q){display:none}
+  .finder{padding:10px 20px} .frow{gap:6px} .field{height:34px;padding:0 10px} .frow+.frow{margin-top:6px}
+  footer{margin-top:50px}
 }
 @media (max-width:640px){.heat{grid-template-columns:104px 1fr 54px}.f3{grid-template-columns:1fr 1fr}.ticker{gap:22px}.ticker div b{font-size:32px}.finder{position:static}}
 </style>
@@ -302,7 +341,7 @@ td.trend{width:110px;min-width:90px}
 <header class="nav"><div class="wrap">
   <a class="mark" href="#top" aria-label="Gated home"><span><b>GATED</b><i>by the numbers</i></span></a>
   <nav>
-    <a href="#heat">Heat</a><a href="#models">Models</a><a href="#outlook">Outlook</a><a href="#groups">Groups</a><a href="#cars">Cars</a>
+    <a href="#pricemap">Price map</a><a href="#heat">Heat</a><a href="#models">Models</a><a href="#outlook">Outlook</a><a href="#groups">Groups</a><a href="#cars">Cars</a>
     <button class="btn btn-accent" type="button" data-act="add">+ Add a car</button>
   </nav>
 </div></header>
@@ -330,6 +369,14 @@ td.trend{width:110px;min-width:90px}
   </div>
   <div class="movers" id="movers"></div>
   <button class="linkbtn" id="moreMovers" type="button" hidden style="margin-top:12px">Show all</button>
+</div></section>
+
+<section id="pricemap"><div class="wrap">
+  <div class="sec-head">
+    <div><div class="rule"></div><h2 class="h-section">Price map</h2><p class="finding" id="pmHead"></p></div>
+    <span class="seg" id="pmMode"><button class="on" data-pm="now" type="button">Today</button><button data-pm="30" type="button">Last 30 days</button></span>
+  </div>
+  <div class="panel pmwrap"><div class="pm" id="pmGrid"></div><div class="legend" id="pmLegend"></div></div>
 </div></section>
 </div>
 
@@ -376,9 +423,9 @@ td.trend{width:110px;min-width:90px}
   <div class="sec-head" style="margin-bottom:12px">
     <div><div class="rule"></div><h2 class="h-section">Every car</h2></div>
   </div>
-  <div class="finder" id="finder">
+  <div class="finder closed" id="finder">
     <div class="frow">
-      <div class="field q"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--ink-3)"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search name, spec, seller, notes" autocomplete="off"></div>
+      <button class="chip ftoggle" id="fToggle" type="button">Filters</button><div class="field q"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--ink-3)"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search name, spec, seller, notes" autocomplete="off"></div>
       <div class="field"><label for="fModel">Model</label><select id="fModel"></select></div>
       <div class="field"><label for="fGroup">Group</label><select id="fGroup"></select></div>
       <div class="field"><label for="fStatus">Status</label><select id="fStatus"><option value="">Any</option><option value="live">Live</option><option value="reserved">Reserved</option><option value="sold">Sold</option><option value="gone">Gone</option></select></div>
@@ -732,6 +779,53 @@ document.addEventListener("pointerdown",e=>{const el=e.target.closest?.(".isp");
     const mv=ev=>spMove(el,ev),up=()=>{removeEventListener("pointermove",mv)};addEventListener("pointermove",mv);addEventListener("pointerup",up,{once:true})}});
 addEventListener("scroll",()=>{if(spPinned){spOut(spPinned);spPinned=null}},{passive:true});
 
+/* ---------- price map ---------- */
+const BINS=[40,60,75,90,110,130,160,200,250,300,350,400,475,550,650,800,1000,1400].map(k=>k*1000);
+let pmMode="now", pmSel=null;
+const binOf=v=>{for(let i=0;i<BINS.length-1;i++)if(v<BINS[i+1])return i;return BINS.length-2};
+const bandLabel=i=>`${gbpk(BINS[i])}–${gbpk(BINS[i+1])}`;
+function renderPriceMap(){
+  const R=rows("sector").filter(r=>r.cars.some(live)), nb=BINS.length-1, cols=`grid-template-columns:repeat(${nb},1fr)`;
+  const grid=R.map(r=>{
+    const cells=Array.from({length:nb},()=>[]);
+    for(const c of r.cars){
+      if(pmMode==="now"){if(live(c)&&c.price!=null)cells[binOf(c.price)].push(c)}
+      else{const ps=c.P.filter(s=>diffDays(s.day,S.today)<=30).map(s=>s.price);if(!ps.length)continue;
+        for(let i=binOf(Math.min(...ps));i<=binOf(Math.max(...ps));i++)cells[i].push(c)}
+    }
+    const pr=r.cars.filter(c=>live(c)&&c.price!=null).map(c=>c.price);
+    return {r,cells,md:pr.length?binOf(median(pr)):-1,lo:pr.length?Math.min(...pr):null,hi:pr.length?Math.max(...pr):null};
+  });
+  const mx=Math.max(1,...grid.flatMap(g=>g.cells.map(c=>c.length)));
+  let out="";
+  for(const g of grid){
+    out+=`<div class="lab" data-qm="${h(g.r.label)}" title="${h(g.r.label)}">${h(g.r.label.replace(/^(Ferrari|Porsche|McLaren|Audi|Aston Martin) /,"").replace(" / ","/").replace("GT3 RS 4.0","RS 4.0"))}<span class="n">${g.r.cars.filter(live).length}</span></div>`;
+    out+=`<div class="cells" style="${cols}">${g.cells.map((cs,i)=>{const n=cs.length,col=n?mix("--pit","--accent",.28+.72*n/mx):"";
+      return `<i class="${n?"v":""}${i===g.md?" md":""}${pmSel===g.r.label+"|"+i?" sel":""}" style="${col?"background:"+col:""}" data-pmc="${h(g.r.label)}|${i}" data-t="${h(`${g.r.label} · ${bandLabel(i)}: ${n?n+" car"+(n>1?"s":"")+" · "+cs.map(c=>`${c.name} ${gbpk(c.price)}`).join(", "):"none"}${i===g.md?" · median band":""}`)}"></i>`}).join("")}</div>`;
+    out+=`<div class="rng">${g.lo==null?"–":g.lo===g.hi?gbpk(g.lo):`${gbpk(g.lo)}–${gbpk(g.hi)}`}</div>`;
+  }
+  const ticks=[0,3,6,9,12,15].filter(i=>i<nb);
+  out+=`<div></div><div class="axis" style="${cols}">${ticks.map((i,k)=>`<span class="${k%2?"alt":""}" style="grid-column:${i+1}/span ${k%2?3:6}">${gbpk(BINS[i])}</span>`).join("")}</div><div></div>`;
+  $("#pmGrid").innerHTML=out;
+  $("#pmLegend").innerHTML=`<span>Cars per price band (bands widen as prices rise)</span><span>1</span><span class="ramp v" style="background:linear-gradient(90deg,${mix("--pit","--accent",.28)},var(--accent))"></span><span>${mx}</span><span><span style="display:inline-block;width:12px;height:12px;border:2px solid var(--ink-1);border-radius:3px;vertical-align:-2px"></span> median band</span><span class="dim">${matchMedia("(hover:hover)").matches?"Click a cell to see those cars":"Tap a cell, tap again to see those cars"}</span>`;
+  const wide=grid.filter(g=>g.lo&&g.hi>g.lo).sort((a,b)=>b.hi/b.lo-a.hi/a.lo)[0], tight=grid.filter(g=>g.lo&&g.r.cars.filter(live).length>=4).sort((a,b)=>a.hi/a.lo-b.hi/b.lo)[0];
+  $("#pmHead").innerHTML=pmMode==="now"
+    ?[wide?`Widest spread: <b>${h(wide.r.label)}</b>, ${gbpk(wide.lo)} to ${gbpk(wide.hi)}.`:"",tight?` Tightest: <b>${h(tight.r.label)}</b>, within ${pct(tight.hi/tight.lo-1,0).replace("+","")}.`:""].join("")
+    :"Every band each car's asking price has touched in the last 30 days. A car that's been cut lights up more than one band.";
+}
+document.addEventListener("click",e=>{
+  const m=e.target.closest("[data-pm]");if(m){pmMode=m.dataset.pm;$$("#pmMode button").forEach(b=>b.classList.toggle("on",b===m));renderPriceMap();return}
+  const c=e.target.closest("[data-pmc]");if(!c)return;
+  const key=c.dataset.pmc,[label,i]=[key.slice(0,key.lastIndexOf("|")),+key.slice(key.lastIndexOf("|")+1)];
+  const touch=!matchMedia("(hover:hover)").matches;
+  if(touch&&pmSel!==key){pmSel=key;renderPriceMap();const r=$(`[data-pmc="${CSS.escape(key)}"]`).getBoundingClientRect();
+    tip.textContent=c.dataset.t;tip.hidden=false;tip.style.left=Math.max(8,Math.min(innerWidth-tip.offsetWidth-8,r.left-tip.offsetWidth/2))+"px";tip.style.top=Math.max(8,r.top-tip.offsetHeight-8)+"px";return}
+  tip.hidden=true;pmSel=null;
+  Object.assign(F,{m:label,pmin:String(BINS[i]),pmax:String(BINS[i+1]-1),q:"",g:"",st:""});syncInputs();applyFilters(true);renderPriceMap();
+});
+$("#pmGrid")?.addEventListener("mousemove",e=>{const i=e.target.closest("i[data-t]");if(!i){tip.hidden=true;return}tip.textContent=i.dataset.t;tip.hidden=false;tip.style.left=Math.min(innerWidth-310,e.clientX+12)+"px";tip.style.top=e.clientY+14+"px"});
+$("#pmGrid")?.addEventListener("mouseleave",()=>tip.hidden=true);
+
 /* ---------- today's movers ---------- */
 let moversAll=false;
 function renderMovers(){
@@ -764,14 +858,14 @@ function renderMovers(){
     list=[...viewed,...stale];
     $("#todayHead").innerHTML=prev?"No price changes, sales or new listings since the last check.":`First morning check done: ${S.cars.filter(live).length} live cars read. From tomorrow this lists every cut, rise, new listing and sale. For now, the most watched and the longest listed.`;
   }
-  const show=moversAll?list:list.slice(0,6);
+  const lim=matchMedia("(max-width:760px)").matches?4:6, show=moversAll?list:list.slice(0,lim);
   $("#movers").innerHTML=show.map(x=>`<div class="panel mover">
     <div class="row1"><span class="what ${x.cls}">${x.what}</span><span class="big ${x.cls}">${x.big}</span></div>
     <div class="nm"><a href="${h(x.c.url)}" target="_blank" rel="noopener">${h(x.c.name)}</a></div>
     <div class="sub2">${h(x.sub)} · ${h(x.c.sector)}</div>
     ${ispark(carSeries(x.c),{h:30,label:x.c.name})}
   </div>`).join("");
-  $("#moreMovers").hidden=list.length<=6;$("#moreMovers").textContent=moversAll?"Show fewer":`Show all ${list.length}`;
+  $("#moreMovers").hidden=list.length<=lim;$("#moreMovers").textContent=moversAll?"Show fewer":`Show all ${list.length}`;
 }
 
 /* ---------- groups ---------- */
@@ -856,7 +950,8 @@ function renderCars(){
       <td><span class="badge ${c.status}">${c.status}</span></td><td class="r"><button class="btn btn-ghost btn-sm" type="button" data-log="${c.id}">Log</button></td></tr>`).join("")}</tbody></table></div>`;
     return;
   }
-  $("#results").innerHTML=`<div class="cars">${cs.map(c=>`<article class="panel car">
+  const phone=matchMedia("(max-width:760px)").matches, cap=phone&&!carsAll?12:cs.length, shown=cs.slice(0,cap);
+  $("#results").innerHTML=`<div class="cars">${shown.map(c=>`<article class="panel car">
     <div class="top"><span class="kicker">${h(c.sector)}</span><span style="display:flex;gap:6px">${riskBadge(c)}<span class="badge ${c.status}">${c.status}</span></span></div>
     <h3><a href="${h(c.url)}" target="_blank" rel="noopener">${h(c.name)}</a></h3>
     <div class="meta">${[c.year,c.mileage!=null?c.mileage.toLocaleString("en-GB")+" mi":null,[c.seller,c.location].filter(Boolean).join(", ")].filter(Boolean).map(h).join(" · ")}</div>
@@ -867,8 +962,10 @@ function renderCars(){
     ${c.notes?`<p class="notes" title="${h(c.notes)}">${h(c.notes)}</p>`:""}
     ${c.groups.length?`<div class="tags">${c.groups.map(g=>`<button class="tag" type="button" data-qg="${g}">${h(gName(g))}</button>`).join("")}</div>`:""}
     <div class="acts"><a class="btn btn-ghost btn-sm" href="${h(c.url)}" target="_blank" rel="noopener">Open advert ↗</a><button class="btn btn-ghost btn-sm" type="button" data-log="${c.id}">Log price / views</button></div>
-  </article>`).join("")}</div>`;
+  </article>`).join("")}</div>${cap<cs.length?`<button class="btn btn-ghost" id="moreCars" type="button" style="margin:14px auto 0;display:flex">Show ${cs.length-cap} more</button>`:""}`;
+  $("#moreCars")?.addEventListener("click",()=>{carsAll=true;renderCars()});
 }
+let carsAll=false;
 function applyFilters(scroll){writeHash();renderCars();renderModels();renderGroups();if(scroll)$("#cars").scrollIntoView({behavior:"smooth",block:"start"})}
 
 /* ---------- GitHub requests ---------- */
@@ -932,6 +1029,7 @@ $("#heroSearch").onsubmit=e=>{e.preventDefault();F.q=$("#heroQ").value.trim();sy
 let deb;const bind=(id,k)=>$(id).addEventListener("input",e=>{F[k]=e.target.value.trim();clearTimeout(deb);deb=setTimeout(()=>applyFilters(),150)});
 bind("#q","q");bind("#pMin","pmin");bind("#pMax","pmax");bind("#yMin","ymin");bind("#yMax","ymax");bind("#mMax","mmax");
 for(const[id,k]of[["#fModel","m"],["#fGroup","g"],["#fStatus","st"],["#sort","sort"]])$(id).addEventListener("change",e=>{F[k]=e.target.value;applyFilters()});
+$("#fToggle").onclick=()=>{const f=$("#finder");f.classList.toggle("closed");$("#fToggle").textContent=f.classList.contains("closed")?"Filters":"Hide filters"};
 $("#reset").onclick=()=>{Object.assign(F,{q:"",m:"",g:"",st:"",pmin:"",pmax:"",ymin:"",ymax:"",mmax:"",sort:"price-asc"});$("#heroQ").value="";syncInputs();applyFilters()};
 $("#share").onclick=async()=>{writeHash();try{await navigator.clipboard.writeText(location.href);$("#share").textContent="Copied"}catch(e){$("#share").textContent="Copy failed"}setTimeout(()=>$("#share").textContent="Copy search link",1600)};
 const tip=$("#tip");
@@ -943,7 +1041,7 @@ fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(d=>{
   $("#fModel").innerHTML=`<option value="">All</option>`+S.sectors.filter(s=>S.cars.some(c=>c.sector===s)).map(s=>`<option>${h(s)}</option>`).join("");
   $("#fGroup").innerHTML=`<option value="">All</option>`+S.groups.map(g=>`<option value="${g.id}">${h(g.name)}</option>`).join("");
   const deep=readHash();syncInputs();
-  scoreCars();renderHero();renderMovers();renderHeat();renderModels();renderOutlook();renderGroups();renderCars();
+  scoreCars();renderHero();renderMovers();renderPriceMap();renderHeat();renderModels();renderOutlook();renderGroups();renderCars();
   $("#moreMovers").onclick=()=>{moversAll=!moversAll;renderMovers()};
   $("#foot").textContent=`Gated · ${S.cars.length} cars tracked · prices and views read from the live adverts each morning at 6:30 and logged by the crew. A blank means the advert does not show it.`;
   if(deep)$("#cars").scrollIntoView();
