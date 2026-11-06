@@ -126,7 +126,7 @@ section{position:relative;padding:84px 0 0;scroll-margin-top:60px}
 .ramp{width:150px;height:8px;border-radius:4px}
 .ramp.p{background:linear-gradient(90deg,var(--pale),var(--deck-up),var(--accent))}
 .ramp.v{background:linear-gradient(90deg,var(--pit),var(--accent))}
-.spk{display:inline-block;width:10px;height:10px;border-radius:3px;box-shadow:inset 0 0 0 2px var(--ink-1);vertical-align:-1px}
+.spk{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);vertical-align:2px}
 .note{border:1px dashed var(--line-strong);border-radius:10px;padding:10px 14px;font-size:13.5px;color:var(--ink-3);margin-bottom:16px}
 #tip{position:fixed;pointer-events:none;z-index:60;background:var(--deck-up);border:1px solid var(--line-strong);border-radius:8px;padding:7px 11px;font-size:12.5px;box-shadow:0 12px 30px rgb(0 0 0/.5);max-width:300px}
 
@@ -206,7 +206,8 @@ svg.band{width:100%;display:block}
 .car h3 a:hover{color:var(--accent-ink)}
 .car .meta{font-size:13.5px;color:var(--ink-3)}
 .car .price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.car .price b{font:700 36px/1 var(--font-head)}
+.car .price b{font:700 36px/1 var(--font-head);transition:color .15s}
+.car .price b.scrub{color:var(--accent-ink)}
 .mv{font:700 15px/1 var(--font-head);letter-spacing:.02em}
 .mv.up{color:var(--accent-ink)} .mv.down{color:var(--pale)}
 .car .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid var(--line);padding-top:10px}
@@ -260,6 +261,40 @@ dialog p{margin:0;color:var(--ink-3);font-size:14px}
 .err{color:var(--pale);font-size:13.5px;min-height:1em}
 footer{border-top:1px solid var(--line);margin-top:90px;padding:28px 0 48px;color:var(--ink-4);font-size:13px}
 footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
+/* lead: hero then today's movers; on phones the movers come first */
+.lead{display:flex;flex-direction:column}
+#today{order:2;padding-top:72px}
+.movers{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.mover{padding:14px 16px 12px;display:grid;gap:6px;text-decoration:none}
+.mover .row1{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.mover .what{font:700 12.5px/1 var(--font-head);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.mover .what.up,.mover .big.up{color:var(--accent-ink)} .mover .what.down,.mover .big.down{color:var(--pale)}
+.mover .big{font:700 26px/1 var(--font-head);white-space:nowrap}
+.mover .nm{font:700 19px/1.1 var(--font-head);letter-spacing:.01em}
+.mover .nm a{text-decoration:none}.mover .nm a:hover{color:var(--accent-ink)}
+.mover .sub2{font-size:13px;color:var(--ink-3)}
+/* interactive sparklines: hover or tap to read the price on any day */
+.isp{position:relative;touch-action:pan-y;cursor:crosshair;-webkit-tap-highlight-color:transparent}
+.isp svg{width:100%;display:block;overflow:visible}
+.isp .ln{fill:none;stroke-width:2;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.isp svg.draw{animation:draw 1.1s var(--ease-out) both}
+@keyframes draw{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@media (prefers-reduced-motion:reduce){.isp svg.draw{animation:none}}
+.isp .cur{stroke:var(--ink-2);stroke-width:1;vector-effect:non-scaling-stroke;opacity:0}
+.isp .dot{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--ink-1);box-shadow:0 0 0 3px rgb(11 26 20/.8);pointer-events:none;opacity:0;transition:opacity .12s}
+.isp.on .dot{opacity:1}
+.isp .chg{position:absolute;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;pointer-events:none}
+.isp .one{font-size:12px;color:var(--ink-4);position:absolute;right:0;top:50%;transform:translateY(-50%)}
+#tip b{font-family:var(--font-head);font-size:15px;letter-spacing:.01em}
+#tip .up{color:var(--accent-ink)} #tip .down{color:var(--pale)}
+td.trend{width:110px;min-width:90px}
+@media (max-width:760px){
+  #today{order:-1;padding-top:22px}
+  #today .h-section{font-size:38px}
+  .hero{padding-top:44px}
+  .hero .lede{display:none}
+  .movers{grid-template-columns:1fr}
+}
 @media (max-width:640px){.heat{grid-template-columns:104px 1fr 54px}.f3{grid-template-columns:1fr 1fr}.ticker{gap:22px}.ticker div b{font-size:32px}.finder{position:static}}
 </style>
 </head>
@@ -272,6 +307,7 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
   </nav>
 </div></header>
 
+<div class="lead">
 <section class="hero" id="top">
   <div class="glow"></div>
   <div class="wrap">
@@ -287,6 +323,15 @@ footer .wrap{display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap}
     <div class="ticker" id="ticker"></div>
   </div>
 </section>
+
+<section id="today"><div class="wrap">
+  <div class="sec-head">
+    <div><div class="rule"></div><div class="kicker" id="todayKick" style="margin-bottom:10px"></div><h2 class="h-section">Today's movers</h2><p class="finding" id="todayHead"></p></div>
+  </div>
+  <div class="movers" id="movers"></div>
+  <button class="linkbtn" id="moreMovers" type="button" hidden style="margin-top:12px">Show all</button>
+</div></section>
+</div>
 
 <section id="heat"><div class="wrap">
   <div class="sec-head">
@@ -574,7 +619,7 @@ function renderModels(){
       <div class="top"><div><div class="kicker" style="font-size:12px">${L.length<=3?'<span class="badge alert">Supply ≤3</span>':"&nbsp;"}</div><h3 style="margin-top:8px">${h(r.label)}</h3></div><div class="live">${L.length}<small>live</small></div></div>
       ${pr.length?`<div><div class="strip">${L.filter(c=>c.price!=null).map(c=>`<i class="${c.status==="reserved"?"r":""}" style="left:${pos(c.price)}%" title="${h(c.name)} · ${gbp(c.price)}"></i>`).join("")}<span class="med" style="left:${pos(md)}%"></span></div>
       <div class="range"><span>${gbpk(lo)}</span><span class="muted" style="font-size:13px">median ${gbpk(md)}</span><span>${gbpk(hi)}</span></div></div>`:`<div class="muted" style="font-size:14px">No live car with a price.</div>`}
-      <div><div class="k2">Where asks have been, 30 days</div>${bandChart(st)}</div>
+      <div><div class="k2">Where asks have been, 30 days · tap for a day</div>${ispark(medSeries(r.cars),{h:46,kind:"band",label:"Low, median and high ask by day"})}<div class="range" style="font-size:13px;margin-top:4px"><span>low ${gbpk(st.lo30)}</span><span class="muted">${st.n} day${st.n===1?"":"s"} of checks</span><span>high ${gbpk(st.hi30)}</span></div></div>
       <div class="mstats"><div><b style="${col(st.chg7)}">${pct(st.chg7)}</b><span>7 days</span></div><div><b style="${col(st.chg30)}">${pct(st.chg30)}</b><span>30 days</span></div><div><b style="${st.proj?col(st.proj.mid):""}">${st.proj?pct(st.proj.mid):"–"}</b><span>next 30 days</span></div></div>
     </button>`}).join("");
   const med=s=>median(S.cars.filter(c=>c.sector===s&&live(c)).map(c=>c.price));
@@ -620,6 +665,115 @@ function renderOutlook(){
     <td>${st.proj?`<span class="badge">${st.proj.conf}</span>`:"–"}</td><td class="muted" style="font-size:13px">${drivers(st)}</td></tr>`).join("")}</tbody>`;
 }
 
+/* ---------- interactive sparklines ----------
+   A series is [{d, v, lo?, hi?, n?}]. Price lines step (asks change in jumps, not slopes), dots mark the days a
+   price moved, and hovering or tapping reads off that day's value; inside a car card the big price follows along. */
+const SPK=[];
+function ispark(series,{h:H=34,kind="price",label=""}={}){
+  const pts=series.filter(p=>p.v!=null);
+  const id=SPK.push({series,kind,label})-1;
+  if(!pts.length)return `<div class="isp" data-sp="${id}" style="height:${H}px"><span class="one">no price yet</span></div>`;
+  const vals=pts.flatMap(p=>[p.v,p.lo??p.v,p.hi??p.v]),lo=Math.min(...vals),hi=Math.max(...vals),rg=hi-lo||1,n=series.length;
+  const X=i=>n>1?i/(n-1)*100:50, Y=v=>(H-4-((v-lo)/rg)*(H-8));
+  const up=pts.at(-1).v>pts[0].v, down=pts.at(-1).v<pts[0].v, col=up?"var(--accent)":down?"var(--pale)":"var(--ink-3)";
+  let body="", marks="";
+  if(kind==="band"&&pts.length>1){
+    const P=series.map((p,i)=>p.v==null?null:{i,...p}).filter(Boolean);
+    body+=`<polygon points="${P.map(p=>X(p.i)+","+Y(p.hi)).join(" ")} ${P.slice().reverse().map(p=>X(p.i)+","+Y(p.lo)).join(" ")}" fill="var(--accent)" opacity=".2"/>`;
+  }
+  if(pts.length>1){
+    let d="";series.forEach((p,i)=>{if(p.v==null)return;const x=X(i).toFixed(2),y=Y(p.v).toFixed(1);d+=d?(kind==="price"?`H${x}V${y}`:`L${x},${y}`):`M${x},${y}`});
+    body+=`<path class="ln" d="${d}" stroke="${kind==="band"?"var(--ink-1)":col}"/>`;
+    if(kind==="price")series.forEach((p,i)=>{const q=series[i-1];if(q&&q.v!=null&&p.v!=null&&q.v!==p.v)marks+=`<i class="chg" style="left:${X(i)}%;top:${Y(p.v)}px;background:${p.v>q.v?"var(--accent)":"var(--pale)"}"></i>`});
+  }else{
+    const p=pts[0];body+=kind==="band"&&p.hi!==p.lo?`<line x1="50" x2="50" y1="${Y(p.hi)}" y2="${Y(p.lo)}" stroke="var(--accent)" stroke-width="4" opacity=".35" vector-effect="non-scaling-stroke"/>`:"";
+    marks+=`<i class="chg" style="left:50%;top:${Y(p.v)}px;background:${col}"></i><span class="one">1 check so far</span>`;
+  }
+  return `<div class="isp" data-sp="${id}" style="height:${H}px" title="${h(label||"Hover or tap for prices")}"><svg class="${pts.length>1?"draw":""}" viewBox="0 0 100 ${H}" preserveAspectRatio="none" style="height:${H}px">${body}<line class="cur" x1="0" x2="0" y1="0" y2="${H}"/></svg>${marks}<span class="dot"></span></div>`;
+}
+const trailDays=(from)=>{const D=days();return D.filter(d=>d>=from)};
+const carSeries=c=>trailDays(c.firstSeen).map(d=>({d,v:liveOn(c,d)||d===c.goneOn?c.asOf(d):null}));
+const medSeries=cars=>{const first=cars.map(c=>c.firstSeen).sort()[0]||S.today;return trailDays(first).map(d=>{const pr=cars.filter(c=>liveOn(c,d)).map(c=>c.asOf(d)).filter(x=>x!=null);return {d,v:median(pr),lo:pr.length?Math.min(...pr):null,hi:pr.length?Math.max(...pr):null,n:pr.length}})};
+function spTip(sp,i){
+  const p=sp.series[i];if(!p||p.v==null)return `<span class="muted">${fmtD(p?.d||S.today)} · no price</span>`;
+  const prev=sp.series.slice(0,i).reverse().find(q=>q.v!=null), first=sp.series.find(q=>q.v!=null), last=[...sp.series].reverse().find(q=>q.v!=null);
+  const ch=(a,b)=>{const r=b/a-1;return Math.abs(r)<.0005?"":` <span class="${r>0?"up":"down"}">${pct(r)}</span>`};
+  if(sp.kind==="band")return `${fmtD(p.d)} · <b>${gbpk(p.v)}</b> median<br>${gbpk(p.lo)} to ${gbpk(p.hi)} across ${p.n} car${p.n===1?"":"s"}${prev?"<br>day before"+ch(prev.v,p.v):""}`;
+  return `${fmtD(p.d)} · <b>${gbp(p.v)}</b>${prev&&prev.v!==p.v?`<br>${p.v>prev.v?"up":"down"} ${gbp(Math.abs(p.v-prev.v))} on the day${ch(prev.v,p.v)}`:""}${last&&p!==last&&last.v!==p.v?`<br>now ${gbp(last.v)}${ch(p.v,last.v)}`:""}${first&&p!==first&&first.v!==p.v&&first!==prev?`<br>first seen ${gbp(first.v)}`:""}`;
+}
+let spPinned=null;
+function spMove(el,e){
+  const sp=SPK[+el.dataset.sp];if(!sp)return;
+  const r=el.getBoundingClientRect(),n=sp.series.length,frac=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+  let i=n>1?Math.round(frac*(n-1)):0;
+  if(sp.series[i]?.v==null){const near=sp.series.map((p,k)=>p.v==null?null:k).filter(k=>k!=null).sort((a,b)=>Math.abs(a-i)-Math.abs(b-i));if(near.length)i=near[0]}
+  const p=sp.series[i],x=n>1?i/(n-1):.5;
+  el.classList.add("on");
+  const cur=el.querySelector(".cur");if(cur){cur.setAttribute("x1",x*100);cur.setAttribute("x2",x*100);cur.style.opacity=1}
+  const dot=el.querySelector(".dot"),svg=el.querySelector("svg");
+  if(dot&&svg&&p?.v!=null){const vals=sp.series.filter(q=>q.v!=null).flatMap(q=>[q.v,q.lo??q.v,q.hi??q.v]),lo=Math.min(...vals),hi=Math.max(...vals),H=r.height;
+    dot.style.left=x*100+"%";dot.style.top=(H-4-((p.v-lo)/(hi-lo||1))*(H-8))+"px"}
+  tip.innerHTML=spTip(sp,i);tip.hidden=false;
+  const tx=Math.min(innerWidth-tip.offsetWidth-8,Math.max(8,e.clientX-tip.offsetWidth/2));
+  tip.style.left=tx+"px";tip.style.top=Math.max(8,r.top-tip.offsetHeight-10)+"px";
+  // inside a car card, the big price follows the cursor
+  const big=el.closest(".car")?.querySelector(".pricev");
+  if(big&&p?.v!=null){big.dataset.orig??=big.textContent;big.textContent=gbp(p.v);big.classList.toggle("scrub",p.d!==S.today)}
+}
+function spOut(el){
+  el.classList.remove("on");const cur=el.querySelector(".cur");if(cur)cur.style.opacity=0;tip.hidden=true;
+  const big=el.closest(".car")?.querySelector(".pricev");if(big&&big.dataset.orig){big.textContent=big.dataset.orig;delete big.dataset.orig;big.classList.remove("scrub")}
+}
+document.addEventListener("pointermove",e=>{const el=e.target.closest?.(".isp");if(el&&e.pointerType==="mouse")spMove(el,e)});
+document.addEventListener("pointerout",e=>{const el=e.target.closest?.(".isp");if(el&&e.pointerType==="mouse"&&!el.contains(e.relatedTarget))spOut(el)});
+document.addEventListener("pointerdown",e=>{const el=e.target.closest?.(".isp");
+  if(spPinned&&spPinned!==el){spOut(spPinned);spPinned=null}
+  if(el&&e.pointerType!=="mouse"){spPinned=el;spMove(el,e);
+    const mv=ev=>spMove(el,ev),up=()=>{removeEventListener("pointermove",mv)};addEventListener("pointermove",mv);addEventListener("pointerup",up,{once:true})}});
+addEventListener("scroll",()=>{if(spPinned){spOut(spPinned);spPinned=null}},{passive:true});
+
+/* ---------- today's movers ---------- */
+let moversAll=false;
+function renderMovers(){
+  const allDays=[...new Set(S.cars.flatMap(c=>c.snaps.map(s=>s.day)))].sort();
+  const baseline=allDays[0], prev=allDays.filter(d=>d<S.today).at(-1);
+  const it=[];
+  for(const c of S.cars){
+    const snapT=c.snaps.find(s=>s.day===S.today);
+    const before=c.snaps.filter(s=>s.day<S.today).at(-1);
+    if(snapT&&before&&snapT.status&&before.status&&snapT.status!==before.status&&snapT.status!=="live")
+      it.push({c,rank:0,what:snapT.status==="gone"?"Advert gone":snapT.status==="sold"?"Sold":"Reserved",cls:"",big:gbpk(c.price),sub:`was ${before.status}`});
+    if(prev&&c.price!=null&&c.asOf(prev)!=null&&c.asOf(S.today)!==c.asOf(prev)){
+      const a=c.asOf(prev),r=c.price/a-1;
+      it.push({c,rank:1,abs:Math.abs(r),what:r<0?"Price cut":"Price rise",cls:r<0?"down":"up",big:pct(r),sub:`${gbp(c.price)}, was ${gbp(a)}`});
+    }
+    if(c.firstSeen===S.today&&S.today!==baseline)it.push({c,rank:2,what:"New listing",cls:"",big:gbpk(c.price),sub:c.added_by?`added by ${c.added_by}`:""});
+    if(c.spike[S.today])it.push({c,rank:3,what:"View spike",cls:"up",big:"+"+Math.round(c.vDay[S.today]),sub:`${c.views?.toLocaleString("en-GB")} views in total`});
+  }
+  it.sort((a,b)=>a.rank-b.rank||(b.abs||0)-(a.abs||0));
+  const cuts=it.filter(x=>x.what==="Price cut").length, rises=it.filter(x=>x.what==="Price rise").length, status=it.filter(x=>x.rank===0).length, news=it.filter(x=>x.rank===2).length;
+  $("#todayKick").textContent=`Morning check · ${at(S.today).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"})}`;
+  let list=it;
+  if(it.length){
+    const big=it.find(x=>x.rank===1);
+    $("#todayHead").innerHTML=[cuts+rises?`${cuts+rises} price change${cuts+rises>1?"s":""} (${cuts} cut, ${rises} up)`:null,status?`${status} sold, reserved or gone`:null,news?`${news} new`:null].filter(Boolean).join(" · ")+(big?`. Biggest: <b>${h(big.c.name)}</b> ${big.big}.`:".");
+  }else{
+    // first day (or a quiet one): what's worth knowing anyway
+    const viewed=S.cars.filter(c=>live(c)&&c.views!=null).sort((a,b)=>b.views-a.views).slice(0,3).map(c=>({c,what:"Most viewed",cls:"up",big:c.views.toLocaleString("en-GB"),sub:`views since listed ${c.age} days ago`}));
+    const stale=S.cars.filter(c=>live(c)&&c.listedKnown).sort((a,b)=>b.age-a.age).slice(0,3).map(c=>({c,what:"Longest listed",cls:"down",big:c.age+"d",sub:`${gbp(c.price)} · ${c.risk?c.risk.lvl.toLowerCase()+" cut risk":""}`}));
+    list=[...viewed,...stale];
+    $("#todayHead").innerHTML=prev?"No price changes, sales or new listings since the last check.":`First morning check done: ${S.cars.filter(live).length} live cars read. From tomorrow this lists every cut, rise, new listing and sale. For now, the most watched and the longest listed.`;
+  }
+  const show=moversAll?list:list.slice(0,6);
+  $("#movers").innerHTML=show.map(x=>`<div class="panel mover">
+    <div class="row1"><span class="what ${x.cls}">${x.what}</span><span class="big ${x.cls}">${x.big}</span></div>
+    <div class="nm"><a href="${h(x.c.url)}" target="_blank" rel="noopener">${h(x.c.name)}</a></div>
+    <div class="sub2">${h(x.sub)} · ${h(x.c.sector)}</div>
+    ${ispark(carSeries(x.c),{h:30,label:x.c.name})}
+  </div>`).join("");
+  $("#moreMovers").hidden=list.length<=6;$("#moreMovers").textContent=moversAll?"Show fewer":`Show all ${list.length}`;
+}
+
 /* ---------- groups ---------- */
 function spark(cars,cls=""){
   const D=days(), pts=D.map(d=>median(cars.map(c=>c.snaps.filter(s=>s.price!=null&&s.day<=d).at(-1)?.price)));
@@ -635,7 +789,7 @@ function renderGroups(){
     return `<div class="panel group ${F.g==g.id?"on":""}" data-qg="${g.id}" role="button" tabindex="0">
       <div><h3>${h(g.name)}</h3><div class="desc">${h(g.description||"")}</div></div>
       <div class="mstats" style="border:0;padding:0;grid-template-columns:repeat(4,1fr)"><div><b>${L.length}</b><span>live</span></div><div><b>${gbpk(pr.length?Math.min(...pr):null)}</b><span>floor</span></div><div><b>${gbpk(pr.length?Math.max(...pr):null)}</b><span>ceiling</span></div><div><b style="${m>0?"color:var(--accent-ink)":m<0?"color:var(--pale)":""}">${pct(m)}</b><span>30 days</span></div></div>
-      ${spark(cars)}
+      ${ispark(medSeries(cars),{h:38,kind:"band",label:"Median ask of this group"})}
       <div class="foot"><span>by ${h(g.created_by||"?")}</span><button class="btn btn-ghost btn-sm" type="button" data-editg="${g.id}">Edit cars</button></div></div>`}).join("")||`<div class="muted">No groups yet.</div>`;
 }
 
@@ -692,10 +846,10 @@ function renderCars(){
   $("#count").textContent=`${cs.length} of ${S.cars.length} cars`;
   if(!cs.length){$("#results").innerHTML=`<div class="empty">No cars match. <button class="linkbtn" data-act="reset" type="button">Clear the search</button> or <button class="linkbtn" data-act="add" type="button">add one</button>.</div>`;return}
   if(F.v==="table"){
-    $("#results").innerHTML=`<div class="tablewrap"><table><thead><tr><th data-sk="added">Car</th><th>Model</th><th class="r" data-sk="year">Year</th><th class="r" data-sk="miles">Miles</th><th class="r" data-sk="price">Asking</th><th class="r">Range seen</th><th class="r" data-sk="week">7 days</th><th class="r" data-sk="move">30 days</th><th class="r" data-sk="pos">vs median</th><th class="r" data-sk="vpd">Views/day</th><th class="r" data-sk="age">Days</th><th data-sk="risk">Cut risk</th><th>Status</th><th></th></tr></thead><tbody>${cs.map(c=>`<tr>
+    $("#results").innerHTML=`<div class="tablewrap"><table><thead><tr><th data-sk="added">Car</th><th>Model</th><th class="r" data-sk="year">Year</th><th class="r" data-sk="miles">Miles</th><th class="r" data-sk="price">Asking</th><th>Trend</th><th class="r">Range seen</th><th class="r" data-sk="week">7 days</th><th class="r" data-sk="move">30 days</th><th class="r" data-sk="pos">vs median</th><th class="r" data-sk="vpd">Views/day</th><th class="r" data-sk="age">Days</th><th data-sk="risk">Cut risk</th><th>Status</th><th></th></tr></thead><tbody>${cs.map(c=>`<tr>
       <td><a href="${h(c.url)}" target="_blank" rel="noopener">${h(c.name)}</a><span class="sub">${h([c.seller,c.location].filter(Boolean).join(", "))}</span></td>
       <td class="muted" style="font-size:13px">${h(c.sector)}</td><td class="r f">${c.year??"–"}</td><td class="r f">${c.mileage!=null?c.mileage.toLocaleString("en-GB"):"–"}</td>
-      <td class="r f" style="font-size:19px">${gbp(c.price)}</td><td class="r f" style="font-size:15px">${c.lo==null?"–":c.lo===c.hi?gbpk(c.lo):gbpk(c.lo)+"–"+gbpk(c.hi)}</td>
+      <td class="r f" style="font-size:19px">${gbp(c.price)}</td><td class="trend">${ispark(carSeries(c),{h:24})}</td><td class="r f" style="font-size:15px">${c.lo==null?"–":c.lo===c.hi?gbpk(c.lo):gbpk(c.lo)+"–"+gbpk(c.hi)}</td>
       <td class="r">${mv(c.chg7)}</td><td class="r">${mv(c.chg30)}</td><td class="r f" style="font-size:15px">${c.pos==null?"–":pct(c.pos,0)}</td>
       <td class="r f">${c.vpd!=null?Math.round(c.vpd):"–"}${Object.keys(c.spike).length?' <span class="spk"></span>':""}</td><td class="r f">${c.listedKnown?c.age:"–"}</td>
       <td>${c.risk?`<span class="badge risk-${c.risk.lvl.toLowerCase()}" title="${h(c.risk.why.join(", ")||"No cut signals")}">${c.risk.lvl}</span>`:"–"}</td>
@@ -706,7 +860,8 @@ function renderCars(){
     <div class="top"><span class="kicker">${h(c.sector)}</span><span style="display:flex;gap:6px">${riskBadge(c)}<span class="badge ${c.status}">${c.status}</span></span></div>
     <h3><a href="${h(c.url)}" target="_blank" rel="noopener">${h(c.name)}</a></h3>
     <div class="meta">${[c.year,c.mileage!=null?c.mileage.toLocaleString("en-GB")+" mi":null,[c.seller,c.location].filter(Boolean).join(", ")].filter(Boolean).map(h).join(" · ")}</div>
-    <div class="price"><b>${gbp(c.price)}</b>${c.lo!=null&&c.lo!==c.hi?`<span class="dim" style="font-size:13px">has been ${gbp(c.lo)} to ${gbp(c.hi)}</span>`:""}</div>
+    <div class="price"><b class="pricev">${gbp(c.price)}</b>${c.lo!=null&&c.lo!==c.hi?`<span class="dim" style="font-size:13px">has been ${gbp(c.lo)} to ${gbp(c.hi)}</span>`:""}</div>
+    ${ispark(carSeries(c),{h:32,label:"Asking price by day"})}
     ${posTrack(c)}
     <div class="stats"><div>${mv(c.chg7,"fig")}<span>7 days</span></div><div>${mv(c.chg30,"fig")}<span>30 days</span></div><div><b>${c.vpd!=null?Math.round(c.vpd):c.views!=null?c.views.toLocaleString("en-GB"):"–"}${Object.keys(c.spike).length?' <span class="spk" title="View spike"></span>':""}</b><span>${c.vpd!=null?"views/day":"views"}</span></div><div><b>${c.listedKnown?c.age:"–"}</b><span>days listed</span></div></div>
     ${c.notes?`<p class="notes" title="${h(c.notes)}">${h(c.notes)}</p>`:""}
@@ -788,7 +943,8 @@ fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(d=>{
   $("#fModel").innerHTML=`<option value="">All</option>`+S.sectors.filter(s=>S.cars.some(c=>c.sector===s)).map(s=>`<option>${h(s)}</option>`).join("");
   $("#fGroup").innerHTML=`<option value="">All</option>`+S.groups.map(g=>`<option value="${g.id}">${h(g.name)}</option>`).join("");
   const deep=readHash();syncInputs();
-  scoreCars();renderHero();renderHeat();renderModels();renderOutlook();renderGroups();renderCars();
+  scoreCars();renderHero();renderMovers();renderHeat();renderModels();renderOutlook();renderGroups();renderCars();
+  $("#moreMovers").onclick=()=>{moversAll=!moversAll;renderMovers()};
   $("#foot").textContent=`Gated · ${S.cars.length} cars tracked · prices and views read from the live adverts each morning at 6:30 and logged by the crew. A blank means the advert does not show it.`;
   if(deep)$("#cars").scrollIntoView();
 }).catch(()=>{$("#results").innerHTML=`<div class="empty">Couldn't load the data. Try again in a minute.</div>`});
