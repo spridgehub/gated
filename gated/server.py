@@ -20,7 +20,7 @@ STATIC = ROOT / "static"
 CONFIG = ROOT / "data" / "config.json"
 PORT = int(os.environ.get("GATED_PORT", "8812"))
 SECTORS = [
-    "Ferrari 430 Scuderia / 16M", "Ferrari F430 manual", "McLaren 675LT", "Aston Martin V12 manual",
+    "Ferrari 430 Scuderia / 16M", "Ferrari F430 manual", "McLaren 675LT", "Aston Martin V12 manual", "Aston Martin V12 Vantage",
     "Porsche 997.1 GT3 / RS", "Porsche 997.2 GT3 / RS", "Porsche 997.2 GT3 RS 4.0", "Porsche 991.1 GT3", "Audi R8 V10 manual", "Other",
 ]
 STATUSES = ("live", "reserved", "sold", "gone")
